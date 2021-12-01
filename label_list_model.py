@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QAbstractListModel
+from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
 from app import *
 
 
@@ -8,7 +8,7 @@ class LabelListModel(QAbstractListModel):
         super(LabelListModel, self).__init__(parent)
         self.app = App()
 
-    def rowCount(self, parent=QtCore.QModelIndex()):
+    def rowCount(self, parent=QModelIndex()):
         return len(self.app.labels)
 
     def data(self, index, role=Qt.DisplayRole):
@@ -20,7 +20,7 @@ class LabelListModel(QAbstractListModel):
             return None
 
         if role == Qt.DisplayRole:
-            return self.self.app.labels[index.row()].id
+            return self.app.labels[index.row()].id
 
         else:
             return None
