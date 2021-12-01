@@ -14,6 +14,7 @@ class MainWindow(QMainWindow):
 
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu('&File')
+        help_menu = menu_bar.addMenu('&Help')
 
         open_action = QAction('&Open', self)
         open_action.setShortcut('Ctrl+O')
