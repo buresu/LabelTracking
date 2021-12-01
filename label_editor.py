@@ -4,8 +4,13 @@ from PySide6.QtGui import QImage, QPainter, QAction
 import cv2 as cv
 
 from app import *
+from label_select_dialog import *
 
 class LabelEditor(QWidget):
+
+    MODE_INVALID=0
+    MODE_DRAW_LABEL=1
+    MODE_EDIT_LABEL=2
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
@@ -27,7 +32,8 @@ class LabelEditor(QWidget):
 
         self.menu.addAction(create_rectagle_action)
 
-        self.vide_capture = cv.VideoCapture()
+        self.dialog = LabelSelectDialog()
+        self.dialog.show()
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
@@ -53,9 +59,9 @@ class LabelEditor(QWidget):
         self.update()
 
     def open_video(self, filename):
-        self.vide_capture.open(filename)
-        self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, 0)
-        ret, frame = self.vide_capture.read()
+        self.app.vide_capture.open(filename)
+        self.app.vide_capture.set(cv.CAP_PROP_POS_FRAMES, 0)
+        ret, frame = self.app.vide_capture.read()
         if ret:
             self.app.frame = frame
             self.update()
@@ -64,10 +70,10 @@ class LabelEditor(QWidget):
         print('create rectagle')
 
     def get_frame_count(self):
-        return int(self.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
+        return int(self.app.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
 
     def get_frame_position(self):
-        return int(self.vide_capture.get(cv.CAP_PROP_POS_FRAMES))
+        return int(self.app.vide_capture.get(cv.CAP_PROP_POS_FRAMES))
 
     def back_frame_position(self):
         pos = self.get_frame_position() - 2
@@ -75,14 +81,14 @@ class LabelEditor(QWidget):
         self.set_frame_position(pos)
 
     def next_frame_position(self):
-        ret, frame = self.vide_capture.read()
+        ret, frame = self.app.vide_capture.read()
         if ret:
             self.app.frame = frame
             self.update()
 
     def set_frame_position(self, pos):
-        self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
-        ret, frame = self.vide_capture.read()
+        self.app.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
+        ret, frame = self.app.vide_capture.read()
         if ret:
             self.app.frame = frame
             self.update()

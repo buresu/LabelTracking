@@ -1,3 +1,4 @@
+import cv2 as cv
 from label import *
 
 
@@ -13,5 +14,6 @@ class App(object):
             self.label_areas = []
             
             self.frame = None
+            self.vide_capture = cv.VideoCapture()
 
         return self._instance
