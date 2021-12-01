@@ -1,7 +1,12 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QRectF
 
 
-class LabelID():
+class Label():
     def __init__(self, parent=None):
-        self.name = "label1"
+        self.id = "label1"
         self.color = Qt.red
+
+class LabelArea():
+    def __init__(self, parent=None):
+        self.id = ""
+        self.rect = QRectF()
