@@ -24,9 +24,7 @@ class App(object):
     def open_video(self, filename):
         self.vide_capture.open(filename)
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, 0)
-        ret, frame = self.vide_capture.read()
-        if ret:
-            self.frame = frame
+        self.read_video_frame()
 
     def get_frame_count(self):
         return int(self.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
@@ -40,12 +38,13 @@ class App(object):
         self.set_frame_position(pos)
 
     def next_frame_position(self):
-        ret, frame = self.vide_capture.read()
-        if ret:
-            self.frame = frame
+        self.read_video_frame()
 
     def set_frame_position(self, pos):
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
+        self.read_video_frame()
+
+    def read_video_frame(self):
         ret, frame = self.vide_capture.read()
         if ret:
             self.frame = frame
