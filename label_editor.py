@@ -6,8 +6,6 @@ import cv2 as cv
 
 class LabelEditor(QWidget):
 
-    frame = None
-
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
@@ -26,6 +24,9 @@ class LabelEditor(QWidget):
         create_rectagle_action.triggered.connect(self.create_rectagle)
 
         self.menu.addAction(create_rectagle_action)
+
+        self.frame = None
+        self.video_capture = cv.VideoCapture()
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
@@ -49,6 +50,13 @@ class LabelEditor(QWidget):
     def open_image(self, filename):
         self.frame = cv.imread(filename, cv.IMREAD_COLOR)
         self.update()
+
+    def open_video(self, filename):
+        self.video_capture.open(filename)
+        ret, frame = self.video_capture.read()
+        if ret:
+            self.frame = frame
+            self.update()
 
     def create_rectagle(self):
         print('create rectagle')

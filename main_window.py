@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt, QFileInfo
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QFileDialog
 from PySide6.QtGui import QAction
 from label_editor import *
@@ -18,7 +19,7 @@ class MainWindow(QMainWindow):
 
         open_action = QAction('&Open', self)
         open_action.setShortcut('Ctrl+O')
-        open_action.setStatusTip('Open image')
+        open_action.setStatusTip('Open file')
         open_action.triggered.connect(self.open_file)
 
         file_menu.addAction(open_action)
@@ -45,6 +46,14 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def open_file(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open Image')
+        filename = QFileDialog.getOpenFileName(self, 'Open file')
         if len(filename) > 0:
-            self.editor.open_image(filename[0])
+            ext = QFileInfo(filename[0]).completeSuffix()
+
+            image_exts = ['jpg', 'png']
+            video_exts = ['mp4', 'm4v']
+
+            if ext in image_exts:
+                self.editor.open_image(filename[0])
+            elif ext in video_exts:
+                self.editor.open_video(filename[0])
