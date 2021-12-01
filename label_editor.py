@@ -1,16 +1,17 @@
-from PySide6.QtCore import Qt, QRect, QUrl
+from PySide6.QtCore import Qt, QRect, QUrl, QRectF, QPointF, QSizeF
 from PySide6.QtWidgets import QWidget, QMenu
-from PySide6.QtGui import QImage, QPainter, QAction
+from PySide6.QtGui import QImage, QPainter, QAction, QCursor
 import cv2 as cv
-
 from app import *
 from label_select_dialog import *
 
+
 class LabelEditor(QWidget):
 
-    MODE_INVALID=0
-    MODE_DRAW_LABEL=1
-    MODE_EDIT_LABEL=2
+    MODE_INVALID = 0
+    MODE_DRAW_LABEL = 1
+    MODE_DRAW_LABEL_MOVE = 2
+    MODE_EDIT_LABEL = 3
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
@@ -32,8 +33,7 @@ class LabelEditor(QWidget):
 
         self.menu.addAction(create_rectagle_action)
 
-        self.dialog = LabelSelectDialog()
-        self.dialog.show()
+        self.mode = self.MODE_DRAW_LABEL
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
@@ -54,8 +54,45 @@ class LabelEditor(QWidget):
                 y = (rh - h) / 2
             p.drawImage(QRect(x, y, w, h), self.mat_to_qimage(self.app.frame))
 
+        for i in range(len(self.app.label_areas)):
+            area = self.app.label_areas[i]
+            p.drawRect(area.rect)
+
+    def mousePressEvent(self, e):
+
+        if self.mode == self.MODE_DRAW_LABEL:
+            area = LabelArea()
+            area.rect = QRectF(e.position(), e.position())
+            self.app.label_areas.append(area)
+            self.mode = self.MODE_DRAW_LABEL_MOVE
+
+        self.update()
+
+    def mouseMoveEvent(self, e):
+
+        if self.mode == self.MODE_DRAW_LABEL_MOVE:
+            area = self.app.label_areas[-1]
+            area.rect.setBottomRight(e.position())
+
+        self.update()
+
+    def mouseReleaseEvent(self, e):
+
+        if self.mode == self.MODE_DRAW_LABEL_MOVE:
+            area = self.app.label_areas[-1]
+            area.rect.setBottomRight(e.position())
+            self.mode = self.MODE_DRAW_LABEL
+            name = LabelSelectDialog.getLabelName(self)
+            if name != '':
+                area.id = name
+            else:
+                self.app.label_areas.remove(area)
+
+        self.update()
+
     def create_rectagle(self):
-        print('create rectagle')
+        self.mode = self.MODE_DRAW_LABEL
+        self.setCursor(Qt.CrossCursor)
 
     def mat_to_qimage(self, mat):
         h, w = mat.shape[:2]
