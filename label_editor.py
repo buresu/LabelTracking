@@ -1,6 +1,7 @@
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtWidgets import QWidget, QMenu
-from PySide6.QtGui import QImage, QPainter, QAction
+from PySide2.QtCore import Qt, QRect, QUrl
+from PySide2.QtWidgets import QWidget, QMenu, QAction
+from PySide2.QtGui import QImage, QPainter
+from PySide2.QtMultimedia import QMediaPlayer
 import cv2 as cv
 
 
@@ -25,17 +26,21 @@ class LabelEditor(QWidget):
 
         self.menu.addAction(create_rectagle_action)
 
-        self.frame = None
-        self.video_capture = cv.VideoCapture()
+        self.frame = QImage()
+
+        self.video_player = QMediaPlayer()
+        #self.video_sink = QVideoSink()
+        #self.video_sink.videoFrameChanged.connect(self.vide_frame_changed)
+        #self.video_player.setVideoSink(self.video_sink)
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
 
     def paintEvent(self, e):
         p = QPainter(self)
-        if self.frame is not None:
+        if not self.frame.isNull():
             rw, rh = (self.width(), self.height())
-            fh, fw = self.frame.shape[:2]
+            fw, fh = (self.frame.width(), self.frame.height())
             x, y, w, h = (0, 0, rw, rh)
             aspect1 = rw / rh
             aspect2 = fw / fh
@@ -45,21 +50,30 @@ class LabelEditor(QWidget):
             else:
                 h = rw / aspect2
                 y = (rh - h) / 2
-            p.drawImage(QRect(x, y, w, h), self.mat_to_qimage(self.frame))
+            p.drawImage(QRect(x, y, w, h), self.frame)
 
     def open_image(self, filename):
-        self.frame = cv.imread(filename, cv.IMREAD_COLOR)
+        self.frame.load(filename)
         self.update()
 
     def open_video(self, filename):
-        self.video_capture.open(filename)
-        ret, frame = self.video_capture.read()
-        if ret:
-            self.frame = frame
-            self.update()
+        self.video_player.setSource(QUrl.fromLocalFile(filename))
+        self.video_player.setPosition(0)
+        self.update()
 
     def create_rectagle(self):
         print('create rectagle')
+
+    def get_video_duration(self):
+        return self.video_player.duration()
+
+    def set_video_position(self, pos):
+        print(pos)
+        self.video_player.setPosition(pos)
+
+    def vide_frame_changed(self, frame):
+        self.frame = frame.toImage()
+        self.update()
 
     def mat_to_qimage(self, mat):
         h, w, d = mat.shape

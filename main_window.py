@@ -1,6 +1,5 @@
-from PySide6.QtCore import Qt, QFileInfo
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QFileDialog
-from PySide6.QtGui import QAction
+from PySide2.QtCore import Qt, QFileInfo
+from PySide2.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QFileDialog, QSlider, QAction
 from label_editor import *
 
 
@@ -38,8 +37,12 @@ class MainWindow(QMainWindow):
         self.editor = LabelEditor()
         self.editor.setSizePolicy(size_policy)
 
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.valueChanged.connect(self.editor.set_video_position)
+
         box = QVBoxLayout()
         box.addWidget(self.editor)
+        box.addWidget(self.slider)
 
         widget = QWidget()
         widget.setLayout(box)
@@ -57,3 +60,4 @@ class MainWindow(QMainWindow):
                 self.editor.open_image(filename[0])
             elif ext in video_exts:
                 self.editor.open_video(filename[0])
+                self.slider.setMaximum(self.editor.get_video_duration())

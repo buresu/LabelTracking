@@ -1,6 +1,6 @@
 import sys
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QApplication
 from main_window import *
 
 
@@ -8,7 +8,7 @@ def main():
     app = QApplication(sys.argv)
     w = MainWindow()
     w.showMaximized()
-    app.exec()
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
