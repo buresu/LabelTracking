@@ -33,16 +33,17 @@ class MainWindow(QMainWindow):
         size_policy.setVerticalPolicy(QSizePolicy.Expanding)
         size_policy.setHorizontalPolicy(QSizePolicy.Expanding)
 
-        editor = LabelEditor()
-        editor.setSizePolicy(size_policy)
+        self.editor = LabelEditor()
+        self.editor.setSizePolicy(size_policy)
 
         box = QVBoxLayout()
-        box.addWidget(editor)
+        box.addWidget(self.editor)
 
         widget = QWidget()
         widget.setLayout(box)
         self.setCentralWidget(widget)
 
     def open_file(self):
-        file_name = QFileDialog.getOpenFileName(self, 'Open Image')
-        print(file_name)
+        filename = QFileDialog.getOpenFileName(self, 'Open Image')
+        if len(filename) > 0:
+            self.editor.open_image(filename[0])
