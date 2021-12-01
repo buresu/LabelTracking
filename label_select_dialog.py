@@ -9,13 +9,19 @@ class LabelSelectDialog(QDialog):
         super(LabelSelectDialog, self).__init__(parent)
         self.app = App()
 
+        self.setWindowTitle('Select Label')
+
         self.label_input = QLineEdit()
 
+        model = LabelListModel()
+
         self.label_view = QListView()
-        self.label_view.setModel(LabelListModel())
+        self.label_view.setModel(model)
+        self.label_view.selectionModel().selectionChanged.connect(self.label_changed)
+        self.label_view.setCurrentIndex(model.index(0))
 
         self.button_box = QDialogButtonBox(
-            QDialogButtonBox.Ok|QDialogButtonBox.Cancel)
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
 
@@ -25,3 +31,6 @@ class LabelSelectDialog(QDialog):
         vbox.addWidget(self.button_box)
 
         self.setLayout(vbox)
+
+    def label_changed(self, select):
+        self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
