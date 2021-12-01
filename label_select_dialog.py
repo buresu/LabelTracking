@@ -34,3 +34,9 @@ class LabelSelectDialog(QDialog):
 
     def label_changed(self, select):
         self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
+
+    def getLabelName(parent=None):
+        dialog = LabelSelectDialog(parent)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.label_input.text()
+        return ''
