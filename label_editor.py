@@ -54,44 +54,8 @@ class LabelEditor(QWidget):
                 y = (rh - h) / 2
             p.drawImage(QRect(x, y, w, h), self.mat_to_qimage(self.app.frame))
 
-    def open_image(self, filename):
-        self.app.frame = cv.imread(filename, cv.IMREAD_COLOR)
-        self.update()
-
-    def open_video(self, filename):
-        self.app.vide_capture.open(filename)
-        self.app.vide_capture.set(cv.CAP_PROP_POS_FRAMES, 0)
-        ret, frame = self.app.vide_capture.read()
-        if ret:
-            self.app.frame = frame
-            self.update()
-
     def create_rectagle(self):
         print('create rectagle')
-
-    def get_frame_count(self):
-        return int(self.app.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
-
-    def get_frame_position(self):
-        return int(self.app.vide_capture.get(cv.CAP_PROP_POS_FRAMES))
-
-    def back_frame_position(self):
-        pos = self.get_frame_position() - 2
-        pos = max(0, pos)
-        self.set_frame_position(pos)
-
-    def next_frame_position(self):
-        ret, frame = self.app.vide_capture.read()
-        if ret:
-            self.app.frame = frame
-            self.update()
-
-    def set_frame_position(self, pos):
-        self.app.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
-        ret, frame = self.app.vide_capture.read()
-        if ret:
-            self.app.frame = frame
-            self.update()
 
     def mat_to_qimage(self, mat):
         h, w = mat.shape[:2]

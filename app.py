@@ -12,8 +12,40 @@ class App(object):
 
             self.labels = []
             self.label_areas = []
-            
+
             self.frame = None
             self.vide_capture = cv.VideoCapture()
 
         return self._instance
+
+    def open_image(self, filename):
+        self.frame = cv.imread(filename, cv.IMREAD_COLOR)
+
+    def open_video(self, filename):
+        self.vide_capture.open(filename)
+        self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, 0)
+        ret, frame = self.vide_capture.read()
+        if ret:
+            self.frame = frame
+
+    def get_frame_count(self):
+        return int(self.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
+
+    def get_frame_position(self):
+        return int(self.vide_capture.get(cv.CAP_PROP_POS_FRAMES))
+
+    def back_frame_position(self):
+        pos = self.get_frame_position() - 2
+        pos = max(0, pos)
+        self.set_frame_position(pos)
+
+    def next_frame_position(self):
+        ret, frame = self.vide_capture.read()
+        if ret:
+            self.frame = frame
+
+    def set_frame_position(self, pos):
+        self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
+        ret, frame = self.vide_capture.read()
+        if ret:
+            self.frame = frame

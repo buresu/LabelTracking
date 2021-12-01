@@ -2,11 +2,13 @@ from PySide6.QtCore import Qt, QFileInfo
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton
 from PySide6.QtGui import QAction, QIcon
 from label_editor import *
+from app import *
 
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
+        self.app = App()
         self.setup_ui()
 
     def setup_ui(self):
@@ -74,27 +76,32 @@ class MainWindow(QMainWindow):
             video_exts = ['mp4', 'm4v']
 
             if ext in image_exts:
-                self.editor.open_image(filename[0])
+                self.app.open_image(filename[0])
                 self.back_button.setEnabled(False)
                 self.next_button.setEnabled(False)
                 self.slider.setEnabled(False)
                 self.slider.setValue(0)
+                self.editor.update()
 
             elif ext in video_exts:
-                self.editor.open_video(filename[0])
+                self.app.open_video(filename[0])
                 self.back_button.setEnabled(True)
                 self.next_button.setEnabled(True)
                 self.slider.setEnabled(True)
                 self.slider.setValue(0)
-                self.slider.setMaximum(self.editor.get_frame_count() - 1)
+                self.slider.setMaximum(self.app.get_frame_count() - 1)
+                self.editor.update()
 
     def slider_changed(self):
-        self.editor.set_frame_position(self.slider.value())
+        self.app.set_frame_position(self.slider.value())
+        self.editor.update()
 
     def back_button_pressed(self):
-        self.editor.back_frame_position()
-        self.slider.setValue(self.editor.get_frame_position())
+        self.app.back_frame_position()
+        self.slider.setValue(self.app.get_frame_position())
+        self.editor.update()
 
     def next_button_pressed(self):
-        self.editor.next_frame_position()
-        self.slider.setValue(self.editor.get_frame_position())
+        self.app.next_frame_position()
+        self.slider.setValue(self.app.get_frame_position())
+        self.editor.update()
