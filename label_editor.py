@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QRect
-from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QImage, QPainter
+from PySide6.QtWidgets import QWidget, QMenu
+from PySide6.QtGui import QImage, QPainter, QAction
 import cv2 as cv
 
 
@@ -10,8 +10,25 @@ class LabelEditor(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+
         self.setAutoFillBackground(True)
         self.setPalette(Qt.darkGray)
+
+        self.setFocusPolicy(Qt.ClickFocus)
+
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.context_menu)
+
+        self.menu = QMenu(self)
+
+        create_rectagle_action = QAction('Create Rectagle', self)
+        create_rectagle_action.setShortcut('Ctrl+R')
+        create_rectagle_action.triggered.connect(self.create_rectagle)
+
+        self.menu.addAction(create_rectagle_action)
+
+    def context_menu(self, point):
+        self.menu.exec_(self.mapToGlobal(point))
 
     def paintEvent(self, e):
         p = QPainter(self)
@@ -32,6 +49,9 @@ class LabelEditor(QWidget):
     def open_image(self, filename):
         self.frame = cv.imread(filename, cv.IMREAD_COLOR)
         self.update()
+
+    def create_rectagle(self):
+        print('create rectagle')
 
     def mat_to_qimage(self, mat):
         h, w, d = mat.shape
