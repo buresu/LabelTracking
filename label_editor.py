@@ -3,11 +3,13 @@ from PySide6.QtWidgets import QWidget, QMenu
 from PySide6.QtGui import QImage, QPainter, QAction
 import cv2 as cv
 
+from app import *
 
 class LabelEditor(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        self.app = App()
 
         self.setAutoFillBackground(True)
         self.setPalette(Qt.darkGray)
@@ -25,7 +27,6 @@ class LabelEditor(QWidget):
 
         self.menu.addAction(create_rectagle_action)
 
-        self.frame = None
         self.vide_capture = cv.VideoCapture()
 
     def context_menu(self, point):
@@ -33,9 +34,9 @@ class LabelEditor(QWidget):
 
     def paintEvent(self, e):
         p = QPainter(self)
-        if self.frame is not None:
+        if self.app.frame is not None:
             rw, rh = (self.width(), self.height())
-            fh, fw = self.frame.shape[:2]
+            fh, fw = self.app.frame.shape[:2]
             x, y, w, h = (0, 0, rw, rh)
             aspect1 = rw / rh
             aspect2 = fw / fh
@@ -45,10 +46,10 @@ class LabelEditor(QWidget):
             else:
                 h = rw / aspect2
                 y = (rh - h) / 2
-            p.drawImage(QRect(x, y, w, h), self.mat_to_qimage(self.frame))
+            p.drawImage(QRect(x, y, w, h), self.mat_to_qimage(self.app.frame))
 
     def open_image(self, filename):
-        self.frame = cv.imread(filename, cv.IMREAD_COLOR)
+        self.app.frame = cv.imread(filename, cv.IMREAD_COLOR)
         self.update()
 
     def open_video(self, filename):
@@ -56,7 +57,7 @@ class LabelEditor(QWidget):
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, 0)
         ret, frame = self.vide_capture.read()
         if ret:
-            self.frame = frame
+            self.app.frame = frame
             self.update()
 
     def create_rectagle(self):
@@ -76,14 +77,14 @@ class LabelEditor(QWidget):
     def next_frame_position(self):
         ret, frame = self.vide_capture.read()
         if ret:
-            self.frame = frame
+            self.app.frame = frame
             self.update()
 
     def set_frame_position(self, pos):
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
         ret, frame = self.vide_capture.read()
         if ret:
-            self.frame = frame
+            self.app.frame = frame
             self.update()
 
     def mat_to_qimage(self, mat):
