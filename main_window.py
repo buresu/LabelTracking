@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QFileInfo
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QFileDialog, QSlider
-from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton
+from PySide6.QtGui import QAction, QIcon
 from label_editor import *
 
 
@@ -39,14 +39,30 @@ class MainWindow(QMainWindow):
         self.editor.setSizePolicy(size_policy)
 
         self.slider = QSlider(Qt.Horizontal)
-        self.slider.sliderReleased.connect(self.update_video_position)
+        self.slider.setEnabled(False)
+        self.slider.sliderReleased.connect(self.slider_changed)
 
-        box = QVBoxLayout()
-        box.addWidget(self.editor)
-        box.addWidget(self.slider)
+        self.back_button = QPushButton()
+        self.back_button.setEnabled(False)
+        self.back_button.setIcon(QIcon.fromTheme("go-previous"))
+        self.back_button.pressed.connect(self.back_button_pressed)
+
+        self.next_button = QPushButton()
+        self.next_button.setEnabled(False)
+        self.next_button.setIcon(QIcon.fromTheme("go-next"))
+        self.next_button.pressed.connect(self.next_button_pressed)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.slider)
+        hbox.addWidget(self.back_button)
+        hbox.addWidget(self.next_button)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.editor)
+        vbox.addLayout(hbox)
 
         widget = QWidget()
-        widget.setLayout(box)
+        widget.setLayout(vbox)
         self.setCentralWidget(widget)
 
     def open_file(self):
@@ -59,10 +75,26 @@ class MainWindow(QMainWindow):
 
             if ext in image_exts:
                 self.editor.open_image(filename[0])
+                self.back_button.setEnabled(False)
+                self.next_button.setEnabled(False)
+                self.slider.setEnabled(False)
+                self.slider.setValue(0)
+
             elif ext in video_exts:
                 self.editor.open_video(filename[0])
+                self.back_button.setEnabled(True)
+                self.next_button.setEnabled(True)
+                self.slider.setEnabled(True)
                 self.slider.setValue(0)
                 self.slider.setMaximum(self.editor.get_frame_count() - 1)
 
-    def update_video_position(self):
+    def slider_changed(self):
         self.editor.set_frame_position(self.slider.value())
+
+    def back_button_pressed(self):
+        self.editor.back_frame_position()
+        self.slider.setValue(self.editor.get_frame_position())
+
+    def next_button_pressed(self):
+        self.editor.next_frame_position()
+        self.slider.setValue(self.editor.get_frame_position())

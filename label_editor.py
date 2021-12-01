@@ -65,6 +65,20 @@ class LabelEditor(QWidget):
     def get_frame_count(self):
         return int(self.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
 
+    def get_frame_position(self):
+        return int(self.vide_capture.get(cv.CAP_PROP_POS_FRAMES))
+
+    def back_frame_position(self):
+        pos = self.get_frame_position() - 2
+        pos = max(0, pos)
+        self.set_frame_position(pos)
+
+    def next_frame_position(self):
+        ret, frame = self.vide_capture.read()
+        if ret:
+            self.frame = frame
+            self.update()
+
     def set_frame_position(self, pos):
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
         ret, frame = self.vide_capture.read()
