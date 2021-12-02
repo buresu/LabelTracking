@@ -105,9 +105,9 @@ class App(QObject, metaclass=Singleton):
                     ret, box = self.trackers[self.label_areas.index(
                         area)].update(self.frame)
                     if ret:
-                        x1, y1, x2, y2 = box[0:4]
-                        area.key_points[0] = QPointF(x1, y1)
-                        area.key_points[1] = QPointF(x2, y2)
+                        x, y, w, h = box[0:4]
+                        area.key_points[0] = QPointF(x, y)
+                        area.key_points[1] = QPointF(x + w, y + h)
                         area.update()
         self.request_update()
 
@@ -116,11 +116,11 @@ class App(QObject, metaclass=Singleton):
             self.auto_tracking = True
             for area in self.label_areas:
                 tracker = cv.TrackerCSRT_create()
-                x1 = int(area.rect.topLeft().x())
-                y1 = int(area.rect.topLeft().y())
-                x2 = int(area.rect.bottomRight().x())
-                y2 = int(area.rect.bottomRight().y())
-                tracker.init(self.frame, [x1, y1, x2, y2])
+                x = int(area.rect.x())
+                y = int(area.rect.y())
+                w = int(area.rect.width())
+                h = int(area.rect.height())
+                tracker.init(self.frame, [x, y, w, h])
                 self.trackers.append(tracker)
 
     def stop_tracking(self):
