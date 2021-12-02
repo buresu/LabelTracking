@@ -59,7 +59,7 @@ class LabelEditor(QWidget):
                 label = self.app.get_label(area.id)
                 if label != None:
                     p.setPen(label.color)
-                    p.drawText(area.rect.topLeft() + QPointF(-1, -1), label.id)
+                    p.drawText(area.rect.topLeft() + QPointF(1, -1), label.id)
                 p.drawRect(area.rect)
                 p.restore()
 
@@ -71,8 +71,12 @@ class LabelEditor(QWidget):
                 p.setPen(Qt.yellow)
                 label = self.app.get_label(area.id)
                 if label != None:
-                    p.drawText(area.rect.topLeft() + QPointF(-1, -1), label.id)
+                    p.drawText(area.rect.topLeft() + QPointF(1, -1), label.id)
                 p.drawRect(area.rect)
+                for key in area.key_points:
+                    key_rect = QRectF(0, 0, 5, 5)
+                    key_rect.moveCenter(key)
+                    p.fillRect(key_rect, Qt.yellow)
                 p.restore()
 
         # draw area
