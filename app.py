@@ -31,11 +31,13 @@ class App(QObject, metaclass=Singleton):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) == 0 and id != '':
             self.labels.append(Label(id))
+        self.request_update()
 
     def remove_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) > 0 and id != '':
             self.labels.remove(self.labels[idx[0]])
+        self.request_update()
 
     def get_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
@@ -45,10 +47,12 @@ class App(QObject, metaclass=Singleton):
 
     def open_image(self, filename):
         self.frame = cv.imread(filename, cv.IMREAD_COLOR)
+        self.request_update()
 
     def open_video(self, filename):
         self.vide_capture.open(filename)
         self.set_frame_position(0)
+        self.request_update()
 
     def get_frame_count(self):
         return int(self.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
@@ -72,6 +76,7 @@ class App(QObject, metaclass=Singleton):
         ret, frame = self.vide_capture.read()
         if ret:
             self.frame = frame
+        self.request_update()
 
     def request_update():
         self.update.emit()
