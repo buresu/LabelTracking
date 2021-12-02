@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QListView, QDialogButtonBox
 from app import *
-from label_list_model import *
+from label_view import *
 
 
 class LabelSelectDialog(QDialog):
@@ -11,14 +11,7 @@ class LabelSelectDialog(QDialog):
 
         self.setWindowTitle('Select Label')
 
-        self.label_input = QLineEdit()
-
-        model = LabelListModel()
-
-        self.label_view = QListView()
-        self.label_view.setModel(model)
-        self.label_view.selectionModel().selectionChanged.connect(self.label_changed)
-        self.label_view.setCurrentIndex(model.index(0))
+        self.label_view = LabelView()
 
         self.button_box = QDialogButtonBox(
             QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -26,22 +19,13 @@ class LabelSelectDialog(QDialog):
         self.button_box.rejected.connect(self.reject)
 
         vbox = QVBoxLayout()
-        vbox.addWidget(self.label_input)
         vbox.addWidget(self.label_view)
         vbox.addWidget(self.button_box)
 
         self.setLayout(vbox)
 
-    def label_changed(self, select):
-        self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
-
     def getLabel(parent=None):
         dialog = LabelSelectDialog(parent)
         if dialog.exec() == QDialog.Accepted:
-            id = dialog.label_input.text()
-            label = dialog.app.get_label(id)
-            if label != None:
-                return label
-            elif id != '':
-                return dialog.app.add_label(id)
+            return dialog.app.current_label
         return None
