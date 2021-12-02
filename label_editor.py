@@ -66,7 +66,10 @@ class LabelEditor(QWidget):
 
         for i in range(len(self.app.label_areas)):
             area = self.app.label_areas[i]
+            p.save()
+            p.setPen(self.app.get_label_color(area.id))
             p.drawRect(area.rect)
+            p.restore()
 
     def mousePressEvent(self, e):
 

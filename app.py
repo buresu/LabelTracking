@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt, Signal
 import cv2 as cv
 from label import *
 
@@ -10,6 +11,8 @@ class App(object):
         if self._instance is None:
             self._instance = super(App, self).__new__(self)
 
+            self.updatedayo = Signal()
+
             self.labels = []
             self.label_areas = []
 
@@ -17,6 +20,12 @@ class App(object):
             self.vide_capture = cv.VideoCapture()
 
         return self._instance
+
+    def get_label_color(self, id):
+        idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
+        if len(idx) > 0:
+            return self.labels[idx[0]].color
+        return Qt.white
 
     def open_image(self, filename):
         self.frame = cv.imread(filename, cv.IMREAD_COLOR)
