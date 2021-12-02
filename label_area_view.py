@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QFrame, QVBoxLayout, QListView, QMenu
 from PySide6.QtGui import QAction
 from app import *
 from label_area_list_model import *
+from label_select_dialog import *
 
 
 class LabelAreaView(QFrame):
@@ -29,7 +30,16 @@ class LabelAreaView(QFrame):
 
     def label_area_changed(self, select):
         pass
-        #self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
+        # self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
+
+    def select_label(self):
+        index = self.label_area_view.currentIndex()
+        if index.isValid():
+            area = self.app.label_areas[index.row()]
+            label = LabelSelectDialog.getLabel(self)
+            if label != None:
+                area.id = label.id
+                self.app.request_update()
 
     def remove_label_area(self):
         index = self.label_area_view.currentIndex()
@@ -42,6 +52,10 @@ class LabelAreaView(QFrame):
         index = self.label_area_view.indexAt(p)
         if index.isValid():
             menu = QMenu()
+
+            select_label_action = QAction('Select Label', self)
+            select_label_action.triggered.connect(self.select_label)
+            menu.addAction(select_label_action)
 
             remove_action = QAction('Remove', self)
             remove_action.triggered.connect(self.remove_label_area)
