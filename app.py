@@ -21,6 +21,11 @@ class App(object):
 
         return self._instance
 
+    def add_label(self, id):
+        idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
+        if len(idx) == 0:
+            self.labels.append(Label(id))
+
     def get_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) > 0:

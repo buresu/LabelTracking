@@ -1,8 +1,9 @@
 from PySide6.QtCore import Qt, QFileInfo, QSize
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar
 from PySide6.QtGui import QAction, QIcon
-from label_editor import *
 from app import *
+from label_editor import *
+from label_view import *
 
 
 class MainWindow(QMainWindow):
@@ -76,6 +77,9 @@ class MainWindow(QMainWindow):
         widget = QWidget()
         widget.setLayout(vbox)
         self.setCentralWidget(widget)
+
+        self.label_view = LabelView()
+        self.label_view.show()
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file')

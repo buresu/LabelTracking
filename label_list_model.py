@@ -32,3 +32,6 @@ class LabelListModel(QAbstractListModel):
         pixmap = QPixmap(64, 64)
         pixmap.fill(color)
         return QIcon(pixmap)
+
+    def update(self):
+        self.layoutChanged.emit()
