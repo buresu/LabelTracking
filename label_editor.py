@@ -75,7 +75,8 @@ class LabelEditor(QWidget):
             self.view_translate_start_pos = self.view_translate_pos
         elif self.mode == self.MODE_DRAW_LABEL:
             area = LabelArea()
-            area.rect = QRectF(e.position(), e.position())
+            t,_ = self.view_transform.inverted()
+            area.rect = QRectF(t.map(e.position()), t.map(e.position()))
             self.app.label_areas.append(area)
             self.mode = self.MODE_DRAW_LABEL_MOVE
 
@@ -85,10 +86,12 @@ class LabelEditor(QWidget):
     def mouseMoveEvent(self, e):
 
         if e.modifiers() & Qt.ShiftModifier:
-            self.view_translate_pos = self.view_translate_start_pos + e.position() / self.view_zoom - self.view_press_start_pos
+            self.view_translate_pos = self.view_translate_start_pos + \
+                e.position() / self.view_zoom - self.view_press_start_pos
         elif self.mode == self.MODE_DRAW_LABEL_MOVE:
+            t,_ = self.view_transform.inverted()
             area = self.app.label_areas[-1]
-            area.rect.setBottomRight(e.position())
+            area.rect.setBottomRight(t.map(e.position()))
 
         self.update_view_transform()
         self.update()
@@ -96,13 +99,15 @@ class LabelEditor(QWidget):
     def mouseReleaseEvent(self, e):
 
         if not self.view_press_start_pos.isNull():
-            self.view_translate_pos = self.view_translate_start_pos + e.position() / self.view_zoom - self.view_press_start_pos
+            self.view_translate_pos = self.view_translate_start_pos + \
+                e.position() / self.view_zoom - self.view_press_start_pos
             self.view_press_start_pos = QPointF()
             self.view_translate_start_pos = QPointF()
 
         if self.mode == self.MODE_DRAW_LABEL_MOVE:
+            t,_ = self.view_transform.inverted()
             area = self.app.label_areas[-1]
-            area.rect.setBottomRight(e.position())
+            area.rect.setBottomRight(t.map(e.position()))
             self.mode = self.MODE_DRAW_LABEL
             label = LabelSelectDialog.getLabel(self)
             if label != None:
@@ -143,7 +148,8 @@ class LabelEditor(QWidget):
             t.translate(-rw/2, -rh/2)
 
             t.translate(rw/2 - fw/2, rh/2 - fh/2)
-            t.translate(self.view_translate_pos.x(), self.view_translate_pos.y())
+            t.translate(self.view_translate_pos.x(),
+                        self.view_translate_pos.y())
 
             self.view_transform = t
 
