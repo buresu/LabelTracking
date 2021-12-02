@@ -1,3 +1,4 @@
+import os
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu, QColorDialog
 from PySide6.QtGui import QAction
 from app import *
@@ -18,7 +19,7 @@ class LabelView(QFrame):
 
         self.label_add_button = QPushButton()
         self.label_add_button.setFocusPolicy(Qt.ClickFocus)
-        self.label_add_button.setIcon(QIcon.fromTheme("document-new"))
+        self.label_add_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/booknote_add.svg')))
         self.label_add_button.clicked.connect(self.add_label)
 
         hvox = QHBoxLayout()

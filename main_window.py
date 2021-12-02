@@ -1,3 +1,4 @@
+import os
 from PySide6.QtCore import Qt, QFileInfo, QSize
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox
 from PySide6.QtGui import QAction, QIcon
@@ -24,7 +25,7 @@ class MainWindow(QMainWindow):
         open_action = QAction('&Open', self)
         open_action.setShortcut('Ctrl+O')
         open_action.setStatusTip('Open file')
-        open_action.setIcon(QIcon.fromTheme('document-open'))
+        open_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/folder.svg')))
         open_action.triggered.connect(self.open_file)
 
         file_menu.addAction(open_action)
@@ -32,7 +33,6 @@ class MainWindow(QMainWindow):
         quit_action = QAction('&Quit', self)
         quit_action.setShortcut('Ctrl+Q')
         quit_action.setStatusTip('Quit application')
-        quit_action.setIcon(QIcon.fromTheme('application-exit'))
         quit_action.triggered.connect(self.close)
 
         file_menu.addAction(quit_action)
@@ -41,12 +41,16 @@ class MainWindow(QMainWindow):
         tool_bar.setOrientation(Qt.Vertical)
         tool_bar.setIconSize(QSize(50, 50))
 
-        self.draw_mode_action = QAction('D', self)
+        self.draw_mode_action = QAction('Draw', self)
         self.draw_mode_action.setShortcut('D')
+        self.draw_mode_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/pencil.svg')))
+        self.draw_mode_action.setCheckable(True)
         self.draw_mode_action.triggered.connect(self.change_draw_mode)
 
-        self.edit_mode_action = QAction('E', self)
+        self.edit_mode_action = QAction('Edit', self)
         self.edit_mode_action.setShortcut('E')
+        self.edit_mode_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/hammer.svg')))
+        self.edit_mode_action.setCheckable(True)
         self.edit_mode_action.triggered.connect(self.change_edit_mode)
 
         tool_bar.addAction(open_action)
@@ -68,12 +72,12 @@ class MainWindow(QMainWindow):
 
         self.back_button = QPushButton()
         self.back_button.setEnabled(False)
-        self.back_button.setIcon(QIcon.fromTheme("go-previous"))
+        self.back_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/music_back.svg')))
         self.back_button.pressed.connect(self.back_button_pressed)
 
         self.next_button = QPushButton()
         self.next_button.setEnabled(False)
-        self.next_button.setIcon(QIcon.fromTheme("go-next"))
+        self.next_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/music_forward.svg')))
         self.next_button.pressed.connect(self.next_button_pressed)
 
         self.auto_tracking = QCheckBox('Auto Tracking')
@@ -140,13 +144,13 @@ class MainWindow(QMainWindow):
 
     def change_draw_mode(self):
         self.editor.set_mode(LabelEditor.MODE_DRAW)
-        self.draw_mode_action.setEnabled(False)
-        self.edit_mode_action.setEnabled(True)
+        self.draw_mode_action.setChecked(True)
+        self.edit_mode_action.setChecked(False)
 
     def change_edit_mode(self):
         self.editor.set_mode(LabelEditor.MODE_EDIT)
-        self.draw_mode_action.setEnabled(True)
-        self.edit_mode_action.setEnabled(False)
+        self.draw_mode_action.setChecked(False)
+        self.edit_mode_action.setChecked(True)
 
     def set_auto_tracking(self):
         if self.auto_tracking.checkState() == Qt.Checked:
