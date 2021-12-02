@@ -10,4 +10,5 @@ class Label(object):
 class LabelArea(object):
     def __init__(self, parent=None):
         self.id = ""
+        self.select = False
         self.rect = QRectF()
