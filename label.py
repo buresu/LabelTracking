@@ -13,6 +13,7 @@ class LabelArea(object):
         self.select = False
         self.rect = QRectF()
         self.key_points = [QPointF(), QPointF()]
+        self.key_points_selection = [False, False]
 
     def update(self):
         self.rect.setTopLeft(self.key_points[0])

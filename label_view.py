@@ -12,7 +12,7 @@ class LabelView(QFrame):
 
         self.setWindowTitle('Select Label')
 
-        self.label_input = QLineEdit()
+        self.label_input = QLineEdit('Label1')
         self.label_input.setFocusPolicy(Qt.ClickFocus)
         self.label_input.editingFinished.connect(self.add_label)
 

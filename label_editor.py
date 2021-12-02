@@ -101,8 +101,23 @@ class LabelEditor(QWidget):
                 area = self.app.label_areas[i]
                 if area.rect.contains(local_pos):
                     area.select = True
-                    self.update()
-                    return
+                    break
+
+        # select key points
+        for area in self.app.label_areas:
+            for key in area.key_points:
+                key_rect = QRectF(0, 0, 10, 10)
+                key_rect.moveCenter(key)
+                if key_rect.contains(local_pos):
+                    area.key_points_selection[area.key_points.index(
+                        key)] = True
+                    break
+
+        # check select area
+        for area in self.app.label_areas:
+            if area.select:
+                self.update()
+                return
 
         # draw label
         self.draw_label_area = LabelArea()
@@ -123,6 +138,14 @@ class LabelEditor(QWidget):
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
 
+        # key point
+        for area in self.app.label_areas:
+            for i, b in enumerate(area.key_points_selection):
+                if b:
+                    area.key_points[i] = local_pos
+                    area.update()
+                    break
+
         # draw label
         if self.draw_label_area != None:
             self.draw_label_area.key_points[1] = local_pos
@@ -142,6 +165,15 @@ class LabelEditor(QWidget):
                 e.position() / self.view_zoom - self.view_press_start_pos
             self.view_press_start_pos = QPointF()
             self.view_translate_start_pos = QPointF()
+
+        # key point
+        for area in self.app.label_areas:
+            for i, b in enumerate(area.key_points_selection):
+                if b:
+                    area.key_points[i] = local_pos
+                    break
+            area.key_points_selection = [
+                False for i in area.key_points_selection]
 
         # draw label
         if self.draw_label_area != None:
