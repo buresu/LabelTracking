@@ -78,5 +78,5 @@ class App(QObject, metaclass=Singleton):
             self.frame = frame
         self.request_update()
 
-    def request_update():
+    def request_update(self):
         self.update.emit()

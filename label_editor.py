@@ -16,6 +16,7 @@ class LabelEditor(QWidget):
     def __init__(self, parent=None):
         super(LabelEditor, self).__init__(parent)
         self.app = App()
+        self.app.update.connect(self.update)
 
         self.setAutoFillBackground(True)
         self.setPalette(Qt.darkGray)
@@ -45,6 +46,8 @@ class LabelEditor(QWidget):
 
     def paintEvent(self, e):
         p = QPainter(self)
+
+        self.update_view_transform()
         p.setTransform(self.view_transform)
 
         if self.app.frame is not None:
@@ -72,7 +75,6 @@ class LabelEditor(QWidget):
             self.app.label_areas.append(area)
             self.mode = self.MODE_DRAW_LABEL_MOVE
 
-        self.update_view_transform()
         self.update()
 
     def mouseMoveEvent(self, e):
@@ -85,7 +87,6 @@ class LabelEditor(QWidget):
             area = self.app.label_areas[-1]
             area.rect.setBottomRight(t.map(e.position()))
 
-        self.update_view_transform()
         self.update()
 
     def mouseReleaseEvent(self, e):
@@ -107,7 +108,6 @@ class LabelEditor(QWidget):
             else:
                 self.app.label_areas.remove(area)
 
-        self.update_view_transform()
         self.update()
 
     def wheelEvent(self, e):
@@ -121,7 +121,6 @@ class LabelEditor(QWidget):
             self.view_zoom += speed
             self.view_zoom = min(max(self.view_zoom, 0.1), 10)
 
-        self.update_view_transform()
         self.update()
 
     def create_rectagle(self):
