@@ -29,8 +29,10 @@ class LabelAreaView(QFrame):
         self.setLayout(vbox)
 
     def label_area_changed(self, select):
-        pass
-        # self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
+        index = select.indexes()[0]
+        self.app.unselect_all_area()
+        self.app.select_area(self.app.label_areas[index.row()])
+        self.app.request_update()
 
     def select_label(self):
         index = self.label_area_view.currentIndex()

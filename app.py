@@ -48,6 +48,15 @@ class App(QObject, metaclass=Singleton):
             return self.labels[idx[0]]
         return None
 
+    def unselect_all_area(self):
+        for a in self.label_areas:
+            a.select = False
+
+    def select_area(self, area):
+        for a in self.label_areas:
+            if a == area:
+                a.select = True
+
     def open_image(self, filename):
         self.frame = cv.imread(filename, cv.IMREAD_COLOR)
         self.request_update()

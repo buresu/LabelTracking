@@ -55,7 +55,10 @@ class LabelEditor(QWidget):
             p.save()
             label = self.app.get_label(area.id)
             if label != None:
-                p.setPen(label.color)
+                if area.select:
+                    p.setPen(Qt.yellow)
+                else:
+                    p.setPen(label.color)
                 p.drawText(area.rect.topLeft() + QPointF(-1, -1), label.id)
             p.drawRect(area.rect)
             p.restore()
