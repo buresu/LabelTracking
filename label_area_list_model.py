@@ -25,7 +25,11 @@ class LabelAreaListModel(QAbstractListModel):
             return self.app.label_areas[index.row()].id
         elif role == Qt.DecorationRole:
             id = self.app.label_areas[index.row()].id
-            return self.create_color_icon(self.app.get_label(id).color)
+            label = self.app.get_label(id)
+            if label != None:
+                return self.create_color_icon(label.color)
+            else:
+                return self.create_color_icon(Qt.white)
 
         else:
             return None
