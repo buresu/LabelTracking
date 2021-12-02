@@ -9,9 +9,9 @@ from label_select_dialog import *
 class LabelEditor(QWidget):
 
     MODE_INVALID = 0
-    MODE_DRAW_LABEL = 1
-    MODE_DRAW_LABEL_MOVE = 2
-    MODE_EDIT_LABEL = 3
+    MODE_VIEW_TRANSFORM = 1
+    MODE_DRAW_LABEL = 2
+    MODE_DRAW_LABEL_MOVE = 3
 
     def __init__(self, parent=None):
         super(LabelEditor, self).__init__(parent)
@@ -76,24 +76,41 @@ class LabelEditor(QWidget):
 
     def mousePressEvent(self, e):
 
+        # transform
+        t, _ = self.get_view_transform().inverted()
+
+        # view transform
         if e.button() == Qt.LeftButton and e.modifiers() & Qt.ShiftModifier:
+            self.mode = self.MODE_VIEW_TRANSFORM
             self.view_press_start_pos = e.position() / self.view_zoom
             self.view_translate_start_pos = self.view_translate_pos
-        elif self.mode == self.MODE_DRAW_LABEL:
+
+        # select area
+        self.app.unselect_all_area()
+        for i in range(len(self.app.label_areas)):
+            area = self.app.label_areas[i]
+            if area.rect.contains(t.map(e.position())):
+                area.select = True
+                break
+
+        # draw label
+        if self.mode == self.MODE_DRAW_LABEL:
+            self.mode = self.MODE_DRAW_LABEL_MOVE
             area = LabelArea()
-            t, _ = self.get_view_transform().inverted()
             area.rect = QRectF(t.map(e.position()), t.map(e.position()))
             self.app.label_areas.append(area)
-            self.mode = self.MODE_DRAW_LABEL_MOVE
 
         self.update()
 
     def mouseMoveEvent(self, e):
 
-        if not self.view_press_start_pos.isNull():
+        # view transform
+        if self.mode == self.MODE_VIEW_TRANSFORM:
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
-        elif self.mode == self.MODE_DRAW_LABEL_MOVE:
+
+        # draw label
+        if self.mode == self.MODE_DRAW_LABEL_MOVE:
             t, _ = self.get_view_transform().inverted()
             area = self.app.label_areas[-1]
             area.rect.setBottomRight(t.map(e.position()))
@@ -102,12 +119,15 @@ class LabelEditor(QWidget):
 
     def mouseReleaseEvent(self, e):
 
-        if not self.view_press_start_pos.isNull():
+        # view transform
+        if self.mode == self.MODE_VIEW_TRANSFORM:
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
             self.view_press_start_pos = QPointF()
             self.view_translate_start_pos = QPointF()
+            self.mode = self.MODE_DRAW_LABEL
 
+        # draw label
         if self.mode == self.MODE_DRAW_LABEL_MOVE:
             t, _ = self.get_view_transform().inverted()
             area = self.app.label_areas[-1]
