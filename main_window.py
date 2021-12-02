@@ -4,6 +4,7 @@ from PySide6.QtGui import QAction, QIcon
 from app import *
 from label_editor import *
 from label_view import *
+from label_area_view import *
 
 
 class MainWindow(QMainWindow):
@@ -80,8 +81,11 @@ class MainWindow(QMainWindow):
 
         self.label_view_dock = QDockWidget('Select Label', self)
         self.label_view_dock.setWidget(LabelView())
-
         self.addDockWidget(Qt.RightDockWidgetArea, self.label_view_dock)
+
+        self.label_area_view_dock = QDockWidget('Label Areas', self)
+        self.label_area_view_dock.setWidget(LabelAreaView())
+        self.addDockWidget(Qt.RightDockWidgetArea, self.label_area_view_dock)
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file')
