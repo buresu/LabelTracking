@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu, QColorDialog
 from PySide6.QtGui import QAction
 from app import *
 from label_list_model import *
@@ -53,19 +53,24 @@ class LabelView(QFrame):
             self.model.update()
 
     def change_label_color(self):
-        pass
+        index = self.label_view.currentIndex()
+        if index.isValid():
+            color = QColorDialog.getColor(Qt.red, self)
+            if color.isValid():
+                self.app.labels[index.row()].color = color
+                self.model.update()
 
     def show_context_menu(self, p):
         index = self.label_view.indexAt(p)
         if index.isValid():
             menu = QMenu()
 
-            remove_action = QAction('Remove', self)
-            remove_action.triggered.connect(self.remove_label)
-            menu.addAction(remove_action)
-
             change_color_action = QAction('Change Label Color', self)
             change_color_action.triggered.connect(self.change_label_color)
             menu.addAction(change_color_action)
+
+            remove_action = QAction('Remove', self)
+            remove_action.triggered.connect(self.remove_label)
+            menu.addAction(remove_action)
 
             menu.exec(self.label_view.mapToGlobal(p))
