@@ -23,8 +23,7 @@ class App(object):
 
     def open_video(self, filename):
         self.vide_capture.open(filename)
-        self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, 0)
-        self.read_video_frame()
+        self.set_frame_position(0)
 
     def get_frame_count(self):
         return int(self.vide_capture.get(cv.CAP_PROP_FRAME_COUNT))
