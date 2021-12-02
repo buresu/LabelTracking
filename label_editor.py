@@ -50,18 +50,29 @@ class LabelEditor(QWidget):
         if self.app.frame is not None:
             p.drawImage(0, 0, self.mat_to_qimage(self.app.frame))
 
+        # unselected area
         for i in range(len(self.app.label_areas)):
             area = self.app.label_areas[i]
-            p.save()
-            label = self.app.get_label(area.id)
-            if label != None:
-                if area.select:
-                    p.setPen(Qt.yellow)
-                else:
+            if not area.select:
+                p.save()
+                label = self.app.get_label(area.id)
+                if label != None:
                     p.setPen(label.color)
-                p.drawText(area.rect.topLeft() + QPointF(-1, -1), label.id)
-            p.drawRect(area.rect)
-            p.restore()
+                    p.drawText(area.rect.topLeft() + QPointF(-1, -1), label.id)
+                p.drawRect(area.rect)
+                p.restore()
+
+        # selected area
+        for i in range(len(self.app.label_areas)):
+            area = self.app.label_areas[i]
+            if area.select:
+                p.save()
+                p.setPen(Qt.yellow)
+                label = self.app.get_label(area.id)
+                if label != None:
+                    p.drawText(area.rect.topLeft() + QPointF(-1, -1), label.id)
+                p.drawRect(area.rect)
+                p.restore()
 
     def mousePressEvent(self, e):
 
@@ -113,7 +124,7 @@ class LabelEditor(QWidget):
                     self.app.label_areas.remove(area)
             if area.rect.isNull():
                 self.app.label_areas.remove(area)
-            
+
             self.app.request_update()
 
         self.update()
