@@ -1,5 +1,5 @@
-from PySide6.QtCore import Qt, QFileInfo
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton
+from PySide6.QtCore import Qt, QFileInfo, QSize
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar
 from PySide6.QtGui import QAction, QIcon
 from label_editor import *
 from app import *
@@ -22,6 +22,7 @@ class MainWindow(QMainWindow):
         open_action = QAction('&Open', self)
         open_action.setShortcut('Ctrl+O')
         open_action.setStatusTip('Open file')
+        open_action.setIcon(QIcon.fromTheme('document-open'))
         open_action.triggered.connect(self.open_file)
 
         file_menu.addAction(open_action)
@@ -29,9 +30,18 @@ class MainWindow(QMainWindow):
         quit_action = QAction('&Quit', self)
         quit_action.setShortcut('Ctrl+Q')
         quit_action.setStatusTip('Quit application')
+        quit_action.setIcon(QIcon.fromTheme('application-exit'))
         quit_action.triggered.connect(self.close)
 
         file_menu.addAction(quit_action)
+
+        tool_bar = QToolBar()
+        tool_bar.setOrientation(Qt.Vertical)
+        tool_bar.setIconSize(QSize(50, 50))
+
+        tool_bar.addAction(open_action)
+
+        self.addToolBar(Qt.LeftToolBarArea, tool_bar)
 
         size_policy = QSizePolicy()
         size_policy.setVerticalPolicy(QSizePolicy.Expanding)
