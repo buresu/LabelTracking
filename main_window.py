@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QFileInfo, QSize
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget
 from PySide6.QtGui import QAction, QIcon
 from app import *
 from label_editor import *
@@ -78,8 +78,10 @@ class MainWindow(QMainWindow):
         widget.setLayout(vbox)
         self.setCentralWidget(widget)
 
-        self.label_view = LabelView()
-        self.label_view.show()
+        self.label_view_dock = QDockWidget('Select Label', self)
+        self.label_view_dock.setWidget(LabelView())
+
+        self.addDockWidget(Qt.RightDockWidgetArea, self.label_view_dock)
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file')
