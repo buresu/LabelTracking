@@ -14,7 +14,7 @@ class LabelEditor(QWidget):
     MODE_EDIT_LABEL = 3
 
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
+        super(LabelEditor, self).__init__(parent)
         self.app = App()
 
         self.setAutoFillBackground(True)
@@ -34,12 +34,14 @@ class LabelEditor(QWidget):
         self.menu.addAction(create_rectagle_action)
 
         self.mode = self.MODE_DRAW_LABEL
+        self.zoom = 1.0
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
 
     def paintEvent(self, e):
         p = QPainter(self)
+        '''
         if self.app.frame is not None:
             rw, rh = (self.width(), self.height())
             fh, fw = self.app.frame.shape[:2]
@@ -53,6 +55,15 @@ class LabelEditor(QWidget):
                 h = rw / aspect2
                 y = (rh - h) / 2
             p.drawImage(QRect(x, y, w, h), self.mat_to_qimage(self.app.frame))
+        '''
+        if self.app.frame is not None:
+            rw, rh = (self.width(), self.height())
+            fh, fw = self.app.frame.shape[:2]
+            p.translate(rw/2, rh/2)
+            p.scale(self.zoom, self.zoom)
+            p.translate(-fw/2, -fh/2)
+
+            p.drawImage(0, 0, self.mat_to_qimage(self.app.frame))
 
         for i in range(len(self.app.label_areas)):
             area = self.app.label_areas[i]
@@ -87,6 +98,19 @@ class LabelEditor(QWidget):
                 area.id = label.id
             else:
                 self.app.label_areas.remove(area)
+
+        self.update()
+
+    def wheelEvent(self, e):
+
+        if not e.pixelDelta().isNull():
+            speed = e.pixelDelta().y() * 0.02 * 0.5
+            self.zoom += speed
+            self.zoom = min(max(self.zoom, 0.1), 10)
+        elif not e.angleDelta().isNull():
+            speed = e.angleDelta().y() * 0.001 * 0.5
+            self.zoom += speed
+            self.zoom = min(max(self.zoom, 0.1), 10)
 
         self.update()
 
