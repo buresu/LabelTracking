@@ -104,6 +104,7 @@ class LabelEditor(QWidget):
                 area.id = label.id
             else:
                 self.app.label_areas.remove(area)
+            self.app.request_update()
 
         self.update()
 
