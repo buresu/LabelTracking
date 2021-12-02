@@ -15,6 +15,7 @@ class LabelEditor(QWidget):
 
         self.setAutoFillBackground(True)
         self.setPalette(Qt.darkGray)
+        self.setCursor(Qt.CrossCursor)
 
         self.setFocusPolicy(Qt.ClickFocus)
 
@@ -23,11 +24,10 @@ class LabelEditor(QWidget):
 
         self.menu = QMenu(self)
 
-        create_rectagle_action = QAction('Create Rectagle', self)
-        create_rectagle_action.setShortcut('Ctrl+R')
-        create_rectagle_action.triggered.connect(self.create_rectagle)
+        remove_area_action = QAction('Remove', self)
+        remove_area_action.triggered.connect(self.remove_area)
 
-        self.menu.addAction(create_rectagle_action)
+        self.menu.addAction(remove_area_action)
 
         self.view_zoom = 1.0
         self.view_press_start_pos = QPointF()
@@ -95,7 +95,7 @@ class LabelEditor(QWidget):
             return
 
         # select area
-        if e.button() == Qt.LeftButton and e.modifiers() & Qt.AltModifier:
+        if e.button() == Qt.RightButton:
             self.app.unselect_all_area()
             for i in range(len(self.app.label_areas)):
                 area = self.app.label_areas[i]
@@ -208,9 +208,11 @@ class LabelEditor(QWidget):
 
         self.update()
 
-    def create_rectagle(self):
-        self.mode = self.MODE_DRAW_LABEL
-        self.setCursor(Qt.CrossCursor)
+    def remove_area(self):
+        for area in self.app.label_areas:
+            if area.select:
+                self.app.label_areas.remove(area)
+                self.app.request_update()
 
     def get_view_transform(self):
         if self.app.frame is not None:
