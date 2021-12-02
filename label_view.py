@@ -17,6 +17,7 @@ class LabelView(QFrame):
         self.label_input.editingFinished.connect(self.add_label)
 
         self.label_add_button = QPushButton()
+        self.label_add_button.setFocusPolicy(Qt.ClickFocus)
         self.label_add_button.setIcon(QIcon.fromTheme("document-new"))
         self.label_add_button.clicked.connect(self.add_label)
 
