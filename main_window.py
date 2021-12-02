@@ -91,6 +91,7 @@ class MainWindow(QMainWindow):
                 self.next_button.setEnabled(False)
                 self.slider.setEnabled(False)
                 self.slider.setValue(0)
+                self.editor.update_view_transform()
                 self.editor.update()
 
             elif ext in video_exts:
@@ -100,6 +101,7 @@ class MainWindow(QMainWindow):
                 self.slider.setEnabled(True)
                 self.slider.setValue(0)
                 self.slider.setMaximum(self.app.get_frame_count() - 1)
+                self.editor.update_view_transform()
                 self.editor.update()
 
     def slider_changed(self):
