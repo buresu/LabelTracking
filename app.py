@@ -1,25 +1,31 @@
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QObject
 import cv2 as cv
 from label import *
 
 
-class App(object):
-    # Singleton
-    _instance = None
+class Singleton(type(QObject), type):
+    def __init__(cls, name, bases, dict):
+        super().__init__(name, bases, dict)
+        cls._instance = None
 
-    def __new__(self):
-        if self._instance is None:
-            self._instance = super(App, self).__new__(self)
+    def __call__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__call__(*args, **kwargs)
+        return cls._instance
 
-            self.updatedayo = Signal()
 
-            self.labels = []
-            self.label_areas = []
+class App(QObject, metaclass=Singleton):
 
-            self.frame = None
-            self.vide_capture = cv.VideoCapture()
+    update = Signal()
 
-        return self._instance
+    def __init__(self):
+        super(App, self).__init__()
+
+        self.labels = []
+        self.label_areas = []
+
+        self.frame = None
+        self.vide_capture = cv.VideoCapture()
 
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
