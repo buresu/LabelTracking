@@ -45,23 +45,9 @@ class LabelEditor(QWidget):
 
     def paintEvent(self, e):
         p = QPainter(self)
-        '''
+        p.setTransform(self.view_transform)
+
         if self.app.frame is not None:
-            rw, rh = (self.width(), self.height())
-            fh, fw = self.app.frame.shape[:2]
-            x, y, w, h = (0, 0, rw, rh)
-            aspect1 = rw / rh
-            aspect2 = fw / fh
-            if aspect1 > aspect2:
-                w = rh * aspect2
-                x = (rw - w) / 2
-            else:
-                h = rw / aspect2
-                y = (rh - h) / 2
-            p.drawImage(QRect(x, y, w, h), self.mat_to_qimage(self.app.frame))
-        '''
-        if self.app.frame is not None:
-            p.setTransform(self.view_transform)
             p.drawImage(0, 0, self.mat_to_qimage(self.app.frame))
 
         for i in range(len(self.app.label_areas)):
@@ -91,7 +77,7 @@ class LabelEditor(QWidget):
 
     def mouseMoveEvent(self, e):
 
-        if e.modifiers() & Qt.ShiftModifier:
+        if not self.view_press_start_pos.isNull():
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
         elif self.mode == self.MODE_DRAW_LABEL_MOVE:
