@@ -25,8 +25,17 @@ class App(QObject, metaclass=Singleton):
         self.label_areas = []
         self.current_label = None
 
+        self.auto_tracking = False
+        self.trackers = []
+
         self.frame = None
         self.vide_capture = cv.VideoCapture()
+
+    def save(self):
+        pass
+
+    def load(self):
+        pass
 
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
@@ -91,7 +100,32 @@ class App(QObject, metaclass=Singleton):
         ret, frame = self.vide_capture.read()
         if ret:
             self.frame = frame
+            if self.auto_tracking:
+                for area in self.label_areas:
+                    ret, box = self.trackers[self.label_areas.index(
+                        area)].update(self.frame)
+                    if ret:
+                        x1, y1, x2, y2 = box[0:4]
+                        area.key_points[0] = QPointF(x1, y1)
+                        area.key_points[1] = QPointF(x2, y2)
+                        area.update()
         self.request_update()
+
+    def start_tracking(self):
+        if self.frame is not None:
+            self.auto_tracking = True
+            for area in self.label_areas:
+                tracker = cv.TrackerCSRT_create()
+                x1 = int(area.rect.topLeft().x())
+                y1 = int(area.rect.topLeft().y())
+                x2 = int(area.rect.bottomRight().x())
+                y2 = int(area.rect.bottomRight().y())
+                tracker.init(self.frame, [x1, y1, x2, y2])
+                self.trackers.append(tracker)
+
+    def stop_tracking(self):
+        self.auto_tracking = False
+        self.trackers.clear()
 
     def request_update(self):
         self.update.emit()

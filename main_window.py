@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QFileInfo, QSize
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox
 from PySide6.QtGui import QAction, QIcon
 from app import *
 from label_editor import *
@@ -76,10 +76,15 @@ class MainWindow(QMainWindow):
         self.next_button.setIcon(QIcon.fromTheme("go-next"))
         self.next_button.pressed.connect(self.next_button_pressed)
 
+        self.auto_tracking = QCheckBox('Auto Tracking')
+        self.auto_tracking.setCheckState(Qt.Unchecked)
+        self.auto_tracking.stateChanged.connect(self.set_auto_tracking)
+
         hbox = QHBoxLayout()
         hbox.addWidget(self.slider)
         hbox.addWidget(self.back_button)
         hbox.addWidget(self.next_button)
+        hbox.addWidget(self.auto_tracking)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.editor)
@@ -142,3 +147,9 @@ class MainWindow(QMainWindow):
         self.editor.set_mode(LabelEditor.MODE_EDIT)
         self.draw_mode_action.setEnabled(True)
         self.edit_mode_action.setEnabled(False)
+
+    def set_auto_tracking(self):
+        if self.auto_tracking.checkState() == Qt.Checked:
+            self.app.start_tracking()
+        else:
+            self.app.stop_tracking()
