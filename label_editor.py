@@ -39,16 +39,13 @@ class LabelEditor(QWidget):
         self.view_press_start_pos = QPointF()
         self.view_translate_pos = QPointF()
         self.view_translate_start_pos = QPointF()
-        self.view_transform = QTransform()
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
 
     def paintEvent(self, e):
         p = QPainter(self)
-
-        self.update_view_transform()
-        p.setTransform(self.view_transform)
+        p.setTransform(self.get_view_transform())
 
         if self.app.frame is not None:
             p.drawImage(0, 0, self.mat_to_qimage(self.app.frame))
@@ -70,7 +67,7 @@ class LabelEditor(QWidget):
             self.view_translate_start_pos = self.view_translate_pos
         elif self.mode == self.MODE_DRAW_LABEL:
             area = LabelArea()
-            t, _ = self.view_transform.inverted()
+            t, _ = self.get_view_transform().inverted()
             area.rect = QRectF(t.map(e.position()), t.map(e.position()))
             self.app.label_areas.append(area)
             self.mode = self.MODE_DRAW_LABEL_MOVE
@@ -83,7 +80,7 @@ class LabelEditor(QWidget):
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
         elif self.mode == self.MODE_DRAW_LABEL_MOVE:
-            t, _ = self.view_transform.inverted()
+            t, _ = self.get_view_transform().inverted()
             area = self.app.label_areas[-1]
             area.rect.setBottomRight(t.map(e.position()))
 
@@ -98,7 +95,7 @@ class LabelEditor(QWidget):
             self.view_translate_start_pos = QPointF()
 
         if self.mode == self.MODE_DRAW_LABEL_MOVE:
-            t, _ = self.view_transform.inverted()
+            t, _ = self.get_view_transform().inverted()
             area = self.app.label_areas[-1]
             area.rect.setBottomRight(t.map(e.position()))
             self.mode = self.MODE_DRAW_LABEL
@@ -127,7 +124,7 @@ class LabelEditor(QWidget):
         self.mode = self.MODE_DRAW_LABEL
         self.setCursor(Qt.CrossCursor)
 
-    def update_view_transform(self):
+    def get_view_transform(self):
         if self.app.frame is not None:
 
             rw, rh = (self.width(), self.height())
@@ -142,7 +139,8 @@ class LabelEditor(QWidget):
             t.translate(self.view_translate_pos.x(),
                         self.view_translate_pos.y())
 
-            self.view_transform = t
+            return t
+        return QTransform()
 
     def mat_to_qimage(self, mat):
         h, w = mat.shape[:2]
