@@ -45,13 +45,11 @@ class LabelView(QFrame):
 
     def add_label(self):
         self.app.add_label(self.label_input.text())
-        self.model.update()
 
     def remove_label(self):
         index = self.label_view.currentIndex()
         if index.isValid():
             self.app.remove_label(index.data(Qt.DisplayRole))
-            self.model.update()
 
     def change_label_color(self):
         index = self.label_view.currentIndex()
@@ -59,7 +57,7 @@ class LabelView(QFrame):
             color = QColorDialog.getColor(Qt.red, self)
             if color.isValid():
                 self.app.labels[index.row()].color = color
-                self.model.update()
+                self.app.request_update()
 
     def show_context_menu(self, p):
         index = self.label_view.indexAt(p)

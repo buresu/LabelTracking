@@ -8,6 +8,7 @@ class LabelListModel(QAbstractListModel):
     def __init__(self, parent=None):
         super(LabelListModel, self).__init__(parent)
         self.app = App()
+        self.app.update.connect(self.layoutChanged)
 
     def rowCount(self, parent=QModelIndex()):
         return len(self.app.labels)
@@ -32,6 +33,3 @@ class LabelListModel(QAbstractListModel):
         pixmap = QPixmap(64, 64)
         pixmap.fill(color)
         return QIcon(pixmap)
-
-    def update(self):
-        self.layoutChanged.emit()

@@ -30,14 +30,16 @@ class App(QObject, metaclass=Singleton):
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) == 0 and id != '':
-            self.labels.append(Label(id))
-        self.request_update()
+            label = Label(id)
+            self.labels.append(label)
+            self.request_update()
+            return label
 
     def remove_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) > 0 and id != '':
             self.labels.remove(self.labels[idx[0]])
-        self.request_update()
+            self.request_update()
 
     def get_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]

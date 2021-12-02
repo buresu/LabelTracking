@@ -39,11 +39,9 @@ class LabelSelectDialog(QDialog):
         dialog = LabelSelectDialog(parent)
         if dialog.exec() == QDialog.Accepted:
             id = dialog.label_input.text()
-            idx = [i for i in range(len(dialog.app.labels)) if dialog.app.labels[i].id == id]
-            if len(idx) > 0:
-                return dialog.app.labels[idx[0]]
-            elif id != '':
-                label = Label(id)
-                dialog.app.labels.append(label)
+            label = dialog.app.get_label(id)
+            if label != None:
                 return label
+            elif id != '':
+                return dialog.app.add_label(id)
         return None
