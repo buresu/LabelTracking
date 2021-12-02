@@ -36,6 +36,11 @@ class LabelEditor(QWidget):
 
         menu = QMenu(self)
 
+        select_label_action = QAction('Select Label', self)
+        select_label_action.setEnabled(self.mode == LabelEditor.MODE_EDIT)
+        select_label_action.triggered.connect(self.select_label)
+        menu.addAction(select_label_action)
+
         remove_area_action = QAction('Remove', self)
         remove_area_action.setEnabled(self.mode == LabelEditor.MODE_EDIT)
         remove_area_action.triggered.connect(self.remove_area)
@@ -221,6 +226,14 @@ class LabelEditor(QWidget):
             if area.select:
                 self.app.label_areas.remove(area)
                 self.app.request_update()
+
+    def select_label(self):
+        for area in self.app.label_areas:
+            if area.select:
+                label = LabelSelectDialog.getLabel(self)
+                if label != None:
+                    area.id = label.id
+                    self.app.request_update()
 
     def set_mode(self, mode):
         self.mode = mode
