@@ -8,10 +8,6 @@ from label_select_dialog import *
 
 class LabelEditor(QWidget):
 
-    MODE_INVALID = 0
-    MODE_VIEW_TRANSFORM = 1
-    MODE_DRAW_LABEL = 2
-
     def __init__(self, parent=None):
         super(LabelEditor, self).__init__(parent)
         self.app = App()
@@ -33,7 +29,6 @@ class LabelEditor(QWidget):
 
         self.menu.addAction(create_rectagle_action)
 
-        self.mode = self.MODE_DRAW_LABEL
         self.view_zoom = 1.0
         self.view_press_start_pos = QPointF()
         self.view_translate_pos = QPointF()
@@ -94,24 +89,26 @@ class LabelEditor(QWidget):
 
         # view transform
         if e.button() == Qt.LeftButton and e.modifiers() & Qt.ShiftModifier:
-            self.mode = self.MODE_VIEW_TRANSFORM
             self.view_press_start_pos = e.position() / self.view_zoom
             self.view_translate_start_pos = self.view_translate_pos
+            self.update()
+            return
 
         # select area
-        self.app.unselect_all_area()
-        for i in range(len(self.app.label_areas)):
-            area = self.app.label_areas[i]
-            if area.rect.contains(local_pos):
-                area.select = True
-                break
+        if e.button() == Qt.LeftButton and e.modifiers() & Qt.AltModifier:
+            self.app.unselect_all_area()
+            for i in range(len(self.app.label_areas)):
+                area = self.app.label_areas[i]
+                if area.rect.contains(local_pos):
+                    area.select = True
+                    self.update()
+                    return
 
         # draw label
-        if self.mode == self.MODE_DRAW_LABEL:
-            self.draw_label_area = LabelArea()
-            self.draw_label_area.key_points[0] = local_pos
-            self.draw_label_area.key_points[1] = local_pos
-            self.draw_label_area.update()
+        self.draw_label_area = LabelArea()
+        self.draw_label_area.key_points[0] = local_pos
+        self.draw_label_area.key_points[1] = local_pos
+        self.draw_label_area.update()
 
         self.update()
 
@@ -122,7 +119,7 @@ class LabelEditor(QWidget):
         local_pos = t.map(e.position())
 
         # view transform
-        if self.mode == self.MODE_VIEW_TRANSFORM:
+        if not self.view_press_start_pos.isNull():
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
 
@@ -140,12 +137,11 @@ class LabelEditor(QWidget):
         local_pos = t.map(e.position())
 
         # view transform
-        if self.mode == self.MODE_VIEW_TRANSFORM:
+        if not self.view_press_start_pos.isNull():
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
             self.view_press_start_pos = QPointF()
             self.view_translate_start_pos = QPointF()
-            self.mode = self.MODE_DRAW_LABEL
 
         # draw label
         if self.draw_label_area != None:
