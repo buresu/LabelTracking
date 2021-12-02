@@ -10,6 +10,7 @@ class Label(object):
 class LabelArea(object):
     def __init__(self, parent=None):
         self.id = ""
+        self.enabled = True
         self.select = False
         self.rect = QRectF()
         self.key_points = [QPointF(), QPointF()]

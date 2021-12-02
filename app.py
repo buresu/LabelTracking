@@ -102,13 +102,14 @@ class App(QObject, metaclass=Singleton):
             self.frame = frame
             if self.auto_tracking:
                 for area in self.label_areas:
-                    ret, box = self.trackers[self.label_areas.index(
-                        area)].update(self.frame)
-                    if ret:
-                        x, y, w, h = box[0:4]
-                        area.key_points[0] = QPointF(x, y)
-                        area.key_points[1] = QPointF(x + w, y + h)
-                        area.update()
+                    if area.enabled:
+                        ret, box = self.trackers[self.label_areas.index(
+                            area)].update(self.frame)
+                        if ret:
+                            x, y, w, h = box[0:4]
+                            area.key_points[0] = QPointF(x, y)
+                            area.key_points[1] = QPointF(x + w, y + h)
+                            area.update()
         self.request_update()
 
     def start_tracking(self):

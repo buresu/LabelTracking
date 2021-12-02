@@ -55,7 +55,7 @@ class LabelEditor(QWidget):
         # unselected area
         for i in range(len(self.app.label_areas)):
             area = self.app.label_areas[i]
-            if not area.select:
+            if not area.select and area.enabled:
                 p.save()
                 label = self.app.get_label(area.id)
                 if label != None:
@@ -67,7 +67,7 @@ class LabelEditor(QWidget):
         # selected area
         for i in range(len(self.app.label_areas)):
             area = self.app.label_areas[i]
-            if area.select:
+            if area.select and area.enabled:
                 p.save()
                 p.setPen(Qt.yellow)
                 label = self.app.get_label(area.id)
@@ -106,19 +106,20 @@ class LabelEditor(QWidget):
                 self.app.unselect_all_area()
                 for i in range(len(self.app.label_areas)):
                     area = self.app.label_areas[i]
-                    if area.rect.contains(local_pos):
+                    if area.rect.contains(local_pos) and area.enabled:
                         area.select = True
                         break
 
             # select key points
             for area in self.app.label_areas:
-                for key in area.key_points:
-                    key_rect = QRectF(0, 0, 6, 6)
-                    key_rect.moveCenter(key)
-                    if key_rect.contains(local_pos):
-                        area.key_points_selection[area.key_points.index(
-                            key)] = True
-                        break
+                if area.enabled:
+                    for key in area.key_points:
+                        key_rect = QRectF(0, 0, 6, 6)
+                        key_rect.moveCenter(key)
+                        if key_rect.contains(local_pos):
+                            area.key_points_selection[area.key_points.index(
+                                key)] = True
+                            break
 
         # draw label
         if self.mode == LabelEditor.MODE_DRAW:
@@ -143,11 +144,12 @@ class LabelEditor(QWidget):
         if self.mode == LabelEditor.MODE_EDIT:
             # key point
             for area in self.app.label_areas:
-                for i, b in enumerate(area.key_points_selection):
-                    if b:
-                        area.key_points[i] = local_pos
-                        area.update()
-                        break
+                if area.enabled:
+                    for i, b in enumerate(area.key_points_selection):
+                        if b:
+                            area.key_points[i] = local_pos
+                            area.update()
+                            break
 
         # draw label
         if self.mode == LabelEditor.MODE_DRAW and self.draw_label_area != None:
@@ -172,13 +174,14 @@ class LabelEditor(QWidget):
         if self.mode == LabelEditor.MODE_EDIT:
             # key point
             for area in self.app.label_areas:
-                for i, b in enumerate(area.key_points_selection):
-                    if b:
-                        area.key_points[i] = local_pos
-                        area.update()
-                        break
-                area.key_points_selection = [
-                    False for i in area.key_points_selection]
+                if area.enabled:
+                    for i, b in enumerate(area.key_points_selection):
+                        if b:
+                            area.key_points[i] = local_pos
+                            area.update()
+                            break
+                    area.key_points_selection = [
+                        False for i in area.key_points_selection]
 
         # draw label
         if self.mode == LabelEditor.MODE_DRAW and self.draw_label_area != None:
