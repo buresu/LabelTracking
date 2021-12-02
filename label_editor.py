@@ -8,6 +8,9 @@ from label_select_dialog import *
 
 class LabelEditor(QWidget):
 
+    MODE_DRAW = 0
+    MODE_EDIT = 1
+
     def __init__(self, parent=None):
         super(LabelEditor, self).__init__(parent)
         self.app = App()
@@ -15,7 +18,6 @@ class LabelEditor(QWidget):
 
         self.setAutoFillBackground(True)
         self.setPalette(Qt.darkGray)
-        self.setCursor(Qt.CrossCursor)
 
         self.setFocusPolicy(Qt.ClickFocus)
 
@@ -34,6 +36,8 @@ class LabelEditor(QWidget):
         self.view_translate_pos = QPointF()
         self.view_translate_start_pos = QPointF()
         self.draw_label_area = None
+
+        self.set_mode(LabelEditor.MODE_DRAW)
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
@@ -94,36 +98,32 @@ class LabelEditor(QWidget):
             self.update()
             return
 
-        # select area
-        if e.button() == Qt.RightButton:
-            self.app.unselect_all_area()
-            for i in range(len(self.app.label_areas)):
-                area = self.app.label_areas[i]
-                if area.rect.contains(local_pos):
-                    area.select = True
-                    break
+        if self.mode == LabelEditor.MODE_EDIT:
+            # select area
+            if e.button() == Qt.LeftButton:
+                self.app.unselect_all_area()
+                for i in range(len(self.app.label_areas)):
+                    area = self.app.label_areas[i]
+                    if area.rect.contains(local_pos):
+                        area.select = True
+                        break
 
-        # select key points
-        for area in self.app.label_areas:
-            for key in area.key_points:
-                key_rect = QRectF(0, 0, 10, 10)
-                key_rect.moveCenter(key)
-                if key_rect.contains(local_pos):
-                    area.key_points_selection[area.key_points.index(
-                        key)] = True
-                    break
-
-        # check select area
-        for area in self.app.label_areas:
-            if area.select:
-                self.update()
-                return
+            # select key points
+            for area in self.app.label_areas:
+                for key in area.key_points:
+                    key_rect = QRectF(0, 0, 10, 10)
+                    key_rect.moveCenter(key)
+                    if key_rect.contains(local_pos):
+                        area.key_points_selection[area.key_points.index(
+                            key)] = True
+                        break
 
         # draw label
-        self.draw_label_area = LabelArea()
-        self.draw_label_area.key_points[0] = local_pos
-        self.draw_label_area.key_points[1] = local_pos
-        self.draw_label_area.update()
+        if self.mode == LabelEditor.MODE_DRAW:
+            self.draw_label_area = LabelArea()
+            self.draw_label_area.key_points[0] = local_pos
+            self.draw_label_area.key_points[1] = local_pos
+            self.draw_label_area.update()
 
         self.update()
 
@@ -138,16 +138,17 @@ class LabelEditor(QWidget):
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
 
-        # key point
-        for area in self.app.label_areas:
-            for i, b in enumerate(area.key_points_selection):
-                if b:
-                    area.key_points[i] = local_pos
-                    area.update()
-                    break
+        if self.mode == LabelEditor.MODE_EDIT:
+            # key point
+            for area in self.app.label_areas:
+                for i, b in enumerate(area.key_points_selection):
+                    if b:
+                        area.key_points[i] = local_pos
+                        area.update()
+                        break
 
         # draw label
-        if self.draw_label_area != None:
+        if self.mode == LabelEditor.MODE_DRAW and self.draw_label_area != None:
             self.draw_label_area.key_points[1] = local_pos
             self.draw_label_area.update()
 
@@ -166,17 +167,18 @@ class LabelEditor(QWidget):
             self.view_press_start_pos = QPointF()
             self.view_translate_start_pos = QPointF()
 
-        # key point
-        for area in self.app.label_areas:
-            for i, b in enumerate(area.key_points_selection):
-                if b:
-                    area.key_points[i] = local_pos
-                    break
-            area.key_points_selection = [
-                False for i in area.key_points_selection]
+        if self.mode == LabelEditor.MODE_EDIT:
+            # key point
+            for area in self.app.label_areas:
+                for i, b in enumerate(area.key_points_selection):
+                    if b:
+                        area.key_points[i] = local_pos
+                        break
+                area.key_points_selection = [
+                    False for i in area.key_points_selection]
 
         # draw label
-        if self.draw_label_area != None:
+        if self.mode == LabelEditor.MODE_DRAW and self.draw_label_area != None:
             self.draw_label_area.key_points[1] = local_pos
             self.draw_label_area.update()
 
@@ -213,6 +215,13 @@ class LabelEditor(QWidget):
             if area.select:
                 self.app.label_areas.remove(area)
                 self.app.request_update()
+
+    def set_mode(self, mode):
+        self.mode = mode
+        if mode == LabelEditor.MODE_DRAW:
+            self.setCursor(Qt.CrossCursor)
+        elif mode == LabelEditor.MODE_EDIT:
+            self.setCursor(Qt.ArrowCursor)
 
     def get_view_transform(self):
         if self.app.frame is not None:
