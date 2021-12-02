@@ -72,3 +72,6 @@ class App(QObject, metaclass=Singleton):
         ret, frame = self.vide_capture.read()
         if ret:
             self.frame = frame
+
+    def request_update():
+        self.update.emit()
