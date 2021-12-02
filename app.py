@@ -21,11 +21,11 @@ class App(object):
 
         return self._instance
 
-    def get_label_color(self, id):
+    def get_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) > 0:
-            return self.labels[idx[0]].color
-        return Qt.white
+            return self.labels[idx[0]]
+        return None
 
     def open_image(self, filename):
         self.frame = cv.imread(filename, cv.IMREAD_COLOR)

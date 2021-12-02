@@ -67,7 +67,10 @@ class LabelEditor(QWidget):
         for i in range(len(self.app.label_areas)):
             area = self.app.label_areas[i]
             p.save()
-            p.setPen(self.app.get_label_color(area.id))
+            label = self.app.get_label(area.id)
+            if label != None:
+                p.setPen(label.color)
+                p.drawText(area.rect.topLeft() + QPointF(-1, -1), label.id)
             p.drawRect(area.rect)
             p.restore()
 
@@ -78,7 +81,7 @@ class LabelEditor(QWidget):
             self.view_translate_start_pos = self.view_translate_pos
         elif self.mode == self.MODE_DRAW_LABEL:
             area = LabelArea()
-            t,_ = self.view_transform.inverted()
+            t, _ = self.view_transform.inverted()
             area.rect = QRectF(t.map(e.position()), t.map(e.position()))
             self.app.label_areas.append(area)
             self.mode = self.MODE_DRAW_LABEL_MOVE
@@ -92,7 +95,7 @@ class LabelEditor(QWidget):
             self.view_translate_pos = self.view_translate_start_pos + \
                 e.position() / self.view_zoom - self.view_press_start_pos
         elif self.mode == self.MODE_DRAW_LABEL_MOVE:
-            t,_ = self.view_transform.inverted()
+            t, _ = self.view_transform.inverted()
             area = self.app.label_areas[-1]
             area.rect.setBottomRight(t.map(e.position()))
 
@@ -108,7 +111,7 @@ class LabelEditor(QWidget):
             self.view_translate_start_pos = QPointF()
 
         if self.mode == self.MODE_DRAW_LABEL_MOVE:
-            t,_ = self.view_transform.inverted()
+            t, _ = self.view_transform.inverted()
             area = self.app.label_areas[-1]
             area.rect.setBottomRight(t.map(e.position()))
             self.mode = self.MODE_DRAW_LABEL
