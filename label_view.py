@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu
+from PySide6.QtGui import QAction
 from app import *
 from label_list_model import *
 
@@ -26,6 +27,9 @@ class LabelView(QFrame):
 
         self.label_view = QListView()
         self.label_view.setModel(self.model)
+        self.label_view.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.label_view.customContextMenuRequested.connect(
+            self.show_context_menu)
         self.label_view.selectionModel().selectionChanged.connect(self.label_changed)
         self.label_view.setCurrentIndex(self.model.index(0))
 
@@ -42,15 +46,26 @@ class LabelView(QFrame):
         self.app.add_label(self.label_input.text())
         self.model.update()
 
-    def getLabel(parent=None):
-        dialog = LabelSelectDialog(parent)
-        if dialog.exec() == QDialog.Accepted:
-            id = dialog.label_input.text()
-            idx = [i for i in range(len(dialog.app.labels)) if dialog.app.labels[i].id == id]
-            if len(idx) > 0:
-                return dialog.app.labels[idx[0]]
-            elif id != '':
-                label = Label(id)
-                dialog.app.labels.append(label)
-                return label
-        return None
+    def remove_label(self):
+        index = self.label_view.currentIndex()
+        if index.isValid():
+            self.app.remove_label(index.data(Qt.DisplayRole))
+            self.model.update()
+
+    def change_label_color(self):
+        pass
+
+    def show_context_menu(self, p):
+        index = self.label_view.indexAt(p)
+        if index.isValid():
+            menu = QMenu()
+
+            remove_action = QAction('Remove', self)
+            remove_action.triggered.connect(self.remove_label)
+            menu.addAction(remove_action)
+
+            change_color_action = QAction('Change Label Color', self)
+            change_color_action.triggered.connect(self.change_label_color)
+            menu.addAction(change_color_action)
+
+            menu.exec(self.label_view.mapToGlobal(p))

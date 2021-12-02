@@ -26,6 +26,11 @@ class App(object):
         if len(idx) == 0 and id != '':
             self.labels.append(Label(id))
 
+    def remove_label(self, id):
+        idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
+        if len(idx) > 0 and id != '':
+            self.labels.remove(self.labels[idx[0]])
+
     def get_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) > 0:
