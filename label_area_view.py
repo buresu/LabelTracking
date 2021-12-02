@@ -32,11 +32,11 @@ class LabelAreaView(QFrame):
         #self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
 
     def remove_label_area(self):
-        pass
-        #index = self.label_view.currentIndex()
-        #if index.isValid():
-        #    self.app.remove_label(index.data(Qt.DisplayRole))
-        #    self.model.update()
+        index = self.label_area_view.currentIndex()
+        if index.isValid():
+            area = self.app.label_areas[index.row()]
+            self.app.label_areas.remove(area)
+            self.app.request_update()
 
     def show_context_menu(self, p):
         index = self.label_area_view.indexAt(p)
