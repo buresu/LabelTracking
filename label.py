@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QRectF
+from PySide6.QtCore import Qt, QRectF, QPointF
 
 
 class Label(object):
@@ -12,3 +12,8 @@ class LabelArea(object):
         self.id = ""
         self.select = False
         self.rect = QRectF()
+        self.key_points = [QPointF(), QPointF()]
+
+    def update(self):
+        self.rect.setTopLeft(self.key_points[0])
+        self.rect.setBottomRight(self.key_points[1])

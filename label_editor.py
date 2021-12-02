@@ -11,7 +11,6 @@ class LabelEditor(QWidget):
     MODE_INVALID = 0
     MODE_VIEW_TRANSFORM = 1
     MODE_DRAW_LABEL = 2
-    MODE_DRAW_LABEL_MOVE = 3
 
     def __init__(self, parent=None):
         super(LabelEditor, self).__init__(parent)
@@ -39,6 +38,7 @@ class LabelEditor(QWidget):
         self.view_press_start_pos = QPointF()
         self.view_translate_pos = QPointF()
         self.view_translate_start_pos = QPointF()
+        self.draw_label_area = None
 
     def context_menu(self, point):
         self.menu.exec_(self.mapToGlobal(point))
@@ -47,6 +47,7 @@ class LabelEditor(QWidget):
         p = QPainter(self)
         p.setTransform(self.get_view_transform())
 
+        # frame
         if self.app.frame is not None:
             p.drawImage(0, 0, self.mat_to_qimage(self.app.frame))
 
@@ -74,10 +75,18 @@ class LabelEditor(QWidget):
                 p.drawRect(area.rect)
                 p.restore()
 
+        # draw area
+        if self.draw_label_area != None:
+            p.save()
+            p.setPen(Qt.white)
+            p.drawRect(self.draw_label_area.rect)
+            p.restore()
+
     def mousePressEvent(self, e):
 
         # transform
         t, _ = self.get_view_transform().inverted()
+        local_pos = t.map(e.position())
 
         # view transform
         if e.button() == Qt.LeftButton and e.modifiers() & Qt.ShiftModifier:
@@ -89,20 +98,24 @@ class LabelEditor(QWidget):
         self.app.unselect_all_area()
         for i in range(len(self.app.label_areas)):
             area = self.app.label_areas[i]
-            if area.rect.contains(t.map(e.position())):
+            if area.rect.contains(local_pos):
                 area.select = True
                 break
 
         # draw label
         if self.mode == self.MODE_DRAW_LABEL:
-            self.mode = self.MODE_DRAW_LABEL_MOVE
-            area = LabelArea()
-            area.rect = QRectF(t.map(e.position()), t.map(e.position()))
-            self.app.label_areas.append(area)
+            self.draw_label_area = LabelArea()
+            self.draw_label_area.key_points[0] = local_pos
+            self.draw_label_area.key_points[1] = local_pos
+            self.draw_label_area.update()
 
         self.update()
 
     def mouseMoveEvent(self, e):
+
+        # transform
+        t, _ = self.get_view_transform().inverted()
+        local_pos = t.map(e.position())
 
         # view transform
         if self.mode == self.MODE_VIEW_TRANSFORM:
@@ -110,14 +123,17 @@ class LabelEditor(QWidget):
                 e.position() / self.view_zoom - self.view_press_start_pos
 
         # draw label
-        if self.mode == self.MODE_DRAW_LABEL_MOVE:
-            t, _ = self.get_view_transform().inverted()
-            area = self.app.label_areas[-1]
-            area.rect.setBottomRight(t.map(e.position()))
+        if self.draw_label_area != None:
+            self.draw_label_area.key_points[1] = local_pos
+            self.draw_label_area.update()
 
         self.update()
 
     def mouseReleaseEvent(self, e):
+
+        # transform
+        t, _ = self.get_view_transform().inverted()
+        local_pos = t.map(e.position())
 
         # view transform
         if self.mode == self.MODE_VIEW_TRANSFORM:
@@ -128,23 +144,21 @@ class LabelEditor(QWidget):
             self.mode = self.MODE_DRAW_LABEL
 
         # draw label
-        if self.mode == self.MODE_DRAW_LABEL_MOVE:
-            t, _ = self.get_view_transform().inverted()
-            area = self.app.label_areas[-1]
-            area.rect.setBottomRight(t.map(e.position()))
-            self.mode = self.MODE_DRAW_LABEL
+        if self.draw_label_area != None:
+            self.draw_label_area.key_points[1] = local_pos
+            self.draw_label_area.update()
 
-            if self.app.current_label != None:
-                area.id = self.app.current_label.id
-            else:
-                label = LabelSelectDialog.getLabel(self)
-                if label != None:
-                    area.id = label.id
+            if not self.draw_label_area.rect.isEmpty():
+                if self.app.current_label != None:
+                    self.draw_label_area.id = self.app.current_label.id
+                    self.app.label_areas.append(self.draw_label_area)
                 else:
-                    self.app.label_areas.remove(area)
-            if area.rect.isNull():
-                self.app.label_areas.remove(area)
+                    label = LabelSelectDialog.getLabel(self)
+                    if label != None:
+                        self.draw_label_area.id = label.id
+                        self.app.label_areas.append(self.draw_label_area)
 
+            self.draw_label_area = None
             self.app.request_update()
 
         self.update()
