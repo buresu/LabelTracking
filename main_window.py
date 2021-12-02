@@ -41,7 +41,17 @@ class MainWindow(QMainWindow):
         tool_bar.setOrientation(Qt.Vertical)
         tool_bar.setIconSize(QSize(50, 50))
 
+        self.draw_mode_action = QAction('D', self)
+        self.draw_mode_action.setShortcut('D')
+        self.draw_mode_action.triggered.connect(self.change_draw_mode)
+
+        self.edit_mode_action = QAction('E', self)
+        self.edit_mode_action.setShortcut('E')
+        self.edit_mode_action.triggered.connect(self.change_edit_mode)
+
         tool_bar.addAction(open_action)
+        tool_bar.addAction(self.draw_mode_action)
+        tool_bar.addAction(self.edit_mode_action)
 
         self.addToolBar(Qt.LeftToolBarArea, tool_bar)
 
@@ -87,6 +97,8 @@ class MainWindow(QMainWindow):
         self.label_area_view_dock.setWidget(LabelAreaView())
         self.addDockWidget(Qt.RightDockWidgetArea, self.label_area_view_dock)
 
+        self.change_draw_mode()
+
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file')
         if len(filename) > 0:
@@ -120,3 +132,13 @@ class MainWindow(QMainWindow):
     def next_button_pressed(self):
         self.app.next_frame_position()
         self.slider.setValue(self.app.get_frame_position())
+
+    def change_draw_mode(self):
+        self.editor.set_mode(LabelEditor.MODE_DRAW)
+        self.draw_mode_action.setEnabled(False)
+        self.edit_mode_action.setEnabled(True)
+
+    def change_edit_mode(self):
+        self.editor.set_mode(LabelEditor.MODE_EDIT)
+        self.draw_mode_action.setEnabled(True)
+        self.edit_mode_action.setEnabled(False)

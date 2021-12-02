@@ -222,8 +222,10 @@ class LabelEditor(QWidget):
         self.mode = mode
         if mode == LabelEditor.MODE_DRAW:
             self.setCursor(Qt.CrossCursor)
+            self.app.unselect_all_area()
         elif mode == LabelEditor.MODE_EDIT:
             self.setCursor(Qt.ArrowCursor)
+        self.update()
 
     def get_view_transform(self):
         if self.app.frame is not None:
