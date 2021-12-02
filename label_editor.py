@@ -24,13 +24,6 @@ class LabelEditor(QWidget):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.context_menu)
 
-        self.menu = QMenu(self)
-
-        remove_area_action = QAction('Remove', self)
-        remove_area_action.triggered.connect(self.remove_area)
-
-        self.menu.addAction(remove_area_action)
-
         self.view_zoom = 1.0
         self.view_press_start_pos = QPointF()
         self.view_translate_pos = QPointF()
@@ -40,7 +33,19 @@ class LabelEditor(QWidget):
         self.set_mode(LabelEditor.MODE_DRAW)
 
     def context_menu(self, point):
-        self.menu.exec_(self.mapToGlobal(point))
+
+        menu = QMenu(self)
+
+        remove_area_action = QAction('Remove', self)
+        if self.mode == LabelEditor.MODE_EDIT:
+            remove_area_action.setEnabled(True)
+        else:
+            remove_area_action.setEnabled(False)
+        remove_area_action.triggered.connect(self.remove_area)
+
+        menu.addAction(remove_area_action)
+
+        menu.exec_(self.mapToGlobal(point))
 
     def paintEvent(self, e):
         p = QPainter(self)
