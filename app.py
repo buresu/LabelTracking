@@ -23,6 +23,7 @@ class App(QObject, metaclass=Singleton):
 
         self.labels = []
         self.label_areas = []
+        self.current_label = None
 
         self.frame = None
         self.vide_capture = cv.VideoCapture()

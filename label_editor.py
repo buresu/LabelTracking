@@ -99,11 +99,15 @@ class LabelEditor(QWidget):
             area = self.app.label_areas[-1]
             area.rect.setBottomRight(t.map(e.position()))
             self.mode = self.MODE_DRAW_LABEL
-            label = LabelSelectDialog.getLabel(self)
-            if label != None:
-                area.id = label.id
+
+            if self.app.current_label != None:
+                area.id = self.app.current_label.id
             else:
-                self.app.label_areas.remove(area)
+                label = LabelSelectDialog.getLabel(self)
+                if label != None:
+                    area.id = label.id
+                else:
+                    self.app.label_areas.remove(area)
             self.app.request_update()
 
         self.update()

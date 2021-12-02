@@ -41,7 +41,9 @@ class LabelView(QFrame):
         self.setLayout(vbox)
 
     def label_changed(self, select):
-        self.label_input.setText(select.indexes()[0].data(Qt.DisplayRole))
+        id = select.indexes()[0].data(Qt.DisplayRole)
+        self.label_input.setText(id)
+        self.app.current_label = self.app.get_label(id)
 
     def add_label(self):
         self.app.add_label(self.label_input.text())

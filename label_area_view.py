@@ -47,4 +47,4 @@ class LabelAreaView(QFrame):
             remove_action.triggered.connect(self.remove_label_area)
             menu.addAction(remove_action)
 
-            menu.exec(self.label_view.mapToGlobal(p))
+            menu.exec(self.label_area_view.mapToGlobal(p))
