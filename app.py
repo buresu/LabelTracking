@@ -23,7 +23,7 @@ class App(object):
 
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
-        if len(idx) == 0:
+        if len(idx) == 0 and id != '':
             self.labels.append(Label(id))
 
     def get_label(self, id):
