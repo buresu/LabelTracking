@@ -75,7 +75,7 @@ class LabelEditor(QWidget):
                     p.drawText(area.rect.topLeft() + QPointF(1, -1), label.id)
                 p.drawRect(area.rect)
                 for key in area.key_points:
-                    key_rect = QRectF(0, 0, 5, 5)
+                    key_rect = QRectF(0, 0, 3, 3)
                     key_rect.moveCenter(key)
                     p.fillRect(key_rect, Qt.yellow)
                 p.restore()
@@ -113,7 +113,7 @@ class LabelEditor(QWidget):
             # select key points
             for area in self.app.label_areas:
                 for key in area.key_points:
-                    key_rect = QRectF(0, 0, 10, 10)
+                    key_rect = QRectF(0, 0, 6, 6)
                     key_rect.moveCenter(key)
                     if key_rect.contains(local_pos):
                         area.key_points_selection[area.key_points.index(
