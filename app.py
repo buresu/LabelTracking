@@ -33,6 +33,7 @@ class App(QObject, metaclass=Singleton):
         if len(idx) == 0 and id != '':
             label = Label(id)
             self.labels.append(label)
+            self.current_label = label
             self.request_update()
             return label
 
@@ -40,6 +41,8 @@ class App(QObject, metaclass=Singleton):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) > 0 and id != '':
             self.labels.remove(self.labels[idx[0]])
+            if len(self.labels) == 0:
+                self.current_label = None
             self.request_update()
 
     def get_label(self, id):
