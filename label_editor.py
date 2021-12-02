@@ -37,10 +37,7 @@ class LabelEditor(QWidget):
         menu = QMenu(self)
 
         remove_area_action = QAction('Remove', self)
-        if self.mode == LabelEditor.MODE_EDIT:
-            remove_area_action.setEnabled(True)
-        else:
-            remove_area_action.setEnabled(False)
+        remove_area_action.setEnabled(self.mode == LabelEditor.MODE_EDIT)
         remove_area_action.triggered.connect(self.remove_area)
 
         menu.addAction(remove_area_action)
