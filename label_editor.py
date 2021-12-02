@@ -175,6 +175,7 @@ class LabelEditor(QWidget):
                 for i, b in enumerate(area.key_points_selection):
                     if b:
                         area.key_points[i] = local_pos
+                        area.update()
                         break
                 area.key_points_selection = [
                     False for i in area.key_points_selection]
