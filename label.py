@@ -1,10 +1,20 @@
-from PySide6.QtCore import Qt, QRectF, QPointF
+from PySide6.QtCore import Qt, QRectF, QPointF, QColor
 
 
 class Label(object):
     def __init__(self, id='label1', color=Qt.red, parent=None):
         self.id = id
         self.color = color
+
+    def serialize(self):
+        obj = dict()
+        obj['id'] = self.id
+        obj['color'] = self.color.name()
+        return obj
+
+    def deserialize(self, obj):
+        self.id = obj['id']
+        self.color = QColor(obj['color'])
 
 
 class LabelArea(object):
