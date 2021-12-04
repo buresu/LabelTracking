@@ -1,4 +1,5 @@
-from PySide6.QtCore import Qt, Signal, QObject
+import os
+from PySide6.QtCore import Qt, Signal, QObject, QJsonDocument, QFile
 import cv2 as cv
 from label import *
 
@@ -21,6 +22,10 @@ class App(QObject, metaclass=Singleton):
     def __init__(self):
         super(App, self).__init__()
 
+        self.version = '0.0.1'
+
+        self.output_dir = './output'
+
         self.labels = []
         self.label_areas = []
         self.current_label = None
@@ -28,14 +33,44 @@ class App(QObject, metaclass=Singleton):
         self.auto_tracking = False
         self.trackers = []
 
+        self.file_path = ''
         self.frame = None
         self.vide_capture = cv.VideoCapture()
 
+        # load config
+        self.load()
+
     def save(self):
-        print('save!')
+
+        # save config
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+
+        f = QFile(os.path.join(self.output_dir, 'config.json'))
+        if f.open(QFile.WriteOnly):
+            json = dict()
+            json['version'] = self.version
+            json['filePath'] = self.file_path
+            json['labels'] = [label.serialize() for label in self.labels]
+            f.write(QJsonDocument.fromVariant(json).toJson())
+            f.close()
 
     def load(self):
-        pass
+
+        # load config
+        f = QFile(os.path.join(self.output_dir, 'config.json'))
+        if f.open(QFile.ReadOnly):
+            try:
+                json = QJsonDocument.fromJson(f.readAll()).object()
+                self.version = json['version']
+                self.file_path = json['filePath']
+                self.labels = [Label.deserialized(
+                    obj) for obj in json['labels']]
+                print(self.labels)
+            except:
+                print('Can not load config')
+            f.close()
+            self.request_update()
 
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
