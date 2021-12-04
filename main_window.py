@@ -39,6 +39,13 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(save_action)
 
+        export_action = QAction('Export', self)
+        export_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp.svg')))
+        export_action.triggered.connect(self.export)
+
+        file_menu.addAction(export_action)
+
         quit_action = QAction('&Quit', self)
         quit_action.setShortcut('Ctrl+Q')
         quit_action.setIcon(QIcon(os.path.join(os.path.dirname(
@@ -73,6 +80,7 @@ class MainWindow(QMainWindow):
 
         tool_bar.addAction(open_action)
         tool_bar.addAction(save_action)
+        tool_bar.addAction(export_action)
         tool_bar.addAction(self.draw_mode_action)
         tool_bar.addAction(self.edit_mode_action)
 
@@ -176,6 +184,9 @@ class MainWindow(QMainWindow):
             self.next_button.setEnabled(False)
             self.slider.setEnabled(False)
             self.slider.setValue(0)
+
+    def export(self):
+        pass
 
     def show_about_qt(self):
         QMessageBox.aboutQt(self, "About PySide")
