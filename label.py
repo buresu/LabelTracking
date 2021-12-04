@@ -20,6 +20,11 @@ class Label(object):
         self.id = obj['id']
         self.color = QColor(obj['color'])
 
+    def deserialized(obj):
+        label = Label()
+        label.deserialize(obj)
+        return label
+
 
 class LabelArea(object):
     def __init__(self, parent=None):
