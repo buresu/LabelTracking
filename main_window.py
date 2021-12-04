@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
 
         tool_bar = QToolBar()
         tool_bar.setOrientation(Qt.Vertical)
-        tool_bar.setIconSize(QSize(50, 50))
+        tool_bar.setIconSize(QSize(40, 40))
 
         self.draw_mode_action = QAction('Draw', self)
         self.draw_mode_action.setShortcut('D')
