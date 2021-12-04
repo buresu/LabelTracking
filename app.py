@@ -44,8 +44,10 @@ class App(QObject, metaclass=Singleton):
         self.load()
 
     def save(self):
+        self.save_config()
+        self.save_frame()
 
-        # save config
+    def save_config(self):
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
@@ -59,23 +61,25 @@ class App(QObject, metaclass=Singleton):
             f.write(QJsonDocument.fromVariant(json).toJson())
             f.close()
 
-        # save current frame
+    def save_frame(self):
         base_name = QFileInfo(self.file_path).baseName()
         if self.is_sequential():
             base_name += '_%s' % self.frame_position
-        f2 = QFile(os.path.join(self.output_dir, base_name + '.json'))
-        if f2.open(QFile.WriteOnly):
+        f = QFile(os.path.join(self.output_dir, base_name + '.json'))
+        if f.open(QFile.WriteOnly):
             json = dict()
             json['labelAreas'] = [area.serialize()
                                   for area in self.label_areas]
-            f2.write(QJsonDocument.fromVariant(json).toJson())
-            f2.close()
+            f.write(QJsonDocument.fromVariant(json).toJson())
+            f.close()
             cv.imwrite(os.path.join(self.output_dir,
                        base_name + '.jpg'), self.frame)
 
     def load(self):
+        self.load_config()
+        self.load_frame()
 
-        # load config
+    def load_config(self):
         f = QFile(os.path.join(self.output_dir, 'config.json'))
         if f.open(QFile.ReadOnly):
             try:
@@ -90,22 +94,21 @@ class App(QObject, metaclass=Singleton):
             f.close()
             self.open_file(self.file_path)
             self.set_frame_position(self.frame_position)
+        self.request_update()
 
-        # load current frame
+    def load_frame(self):
         base_name = QFileInfo(self.file_path).baseName()
         if self.is_sequential():
             base_name += '_%s' % self.frame_position
-        f2 = QFile(os.path.join(self.output_dir, base_name + '.json'))
-        if f2.open(QFile.ReadOnly):
+        f = QFile(os.path.join(self.output_dir, base_name + '.json'))
+        if f.open(QFile.ReadOnly):
             try:
-                json = QJsonDocument.fromJson(f2.readAll()).object()
+                json = QJsonDocument.fromJson(f.readAll()).object()
                 self.label_areas = [LabelArea.deserialized(
                     obj) for obj in json['labelAreas']]
-                print(self.label_areas)
             except:
                 pass
-            f2.close()
-
+            f.close()
         self.request_update()
 
     def is_sequential(self):
@@ -177,10 +180,14 @@ class App(QObject, metaclass=Singleton):
 
     def next_frame_position(self):
         self.frame_position += 1
+        if not self.auto_tracking:
+            self.load_frame()
         self.read_video_frame()
 
     def set_frame_position(self, pos):
         self.frame_position = pos
+        if not self.auto_tracking:
+            self.load_frame()
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
         self.read_video_frame()
 
