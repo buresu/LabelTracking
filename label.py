@@ -27,6 +27,21 @@ class LabelArea(object):
         self.key_points = [QPointF(), QPointF()]
         self.key_points_selection = [False, False]
 
+    def serialize(self):
+        obj = dict()
+        obj['id'] = self.id
+        obj['enabled'] = self.enabled
+        obj['points'] = [[self.key_points[0].x(), self.key_points[0].y()], [
+            self.key_points[1].x(), self.key_points[1].y()]]
+        return obj
+
+    def deserialize(self, obj):
+        self.id = obj['id']
+        self.enabled = obj['enabled']
+        self.points = [QPointF(obj['points'][0][0], obj['points'][0][1]), QPointF(
+            obj['points'][1][0], obj['points'][1][1])]
+        self.update()
+
     def update(self):
         self.rect.setTopLeft(self.key_points[0])
         self.rect.setBottomRight(self.key_points[1])
