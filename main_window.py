@@ -31,6 +31,14 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(open_action)
 
+        save_action = QAction('Save', self)
+        save_action.setShortcut('Ctrl+S')
+        save_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
+        save_action.triggered.connect(self.app.save)
+
+        file_menu.addAction(save_action)
+
         quit_action = QAction('&Quit', self)
         quit_action.setShortcut('Ctrl+Q')
         quit_action.setIcon(QIcon(os.path.join(os.path.dirname(
@@ -43,12 +51,6 @@ class MainWindow(QMainWindow):
         tool_bar = QToolBar()
         tool_bar.setOrientation(Qt.Vertical)
         tool_bar.setIconSize(QSize(50, 50))
-
-        save_action = QAction('Save', self)
-        save_action.setShortcut('Ctrl+S')
-        save_action.setIcon(
-            QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
-        save_action.triggered.connect(self.app.save)
 
         self.draw_mode_action = QAction('Draw', self)
         self.draw_mode_action.setShortcut('D')
