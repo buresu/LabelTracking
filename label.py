@@ -7,6 +7,9 @@ class Label(object):
         self.id = id
         self.color = QColor(color)
 
+    def __repr__(self):
+        return 'Label(id=%s,color=%s)' % (self.id, self.color.name())
+
     def serialize(self):
         obj = dict()
         obj['id'] = self.id
