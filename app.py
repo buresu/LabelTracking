@@ -32,7 +32,7 @@ class App(QObject, metaclass=Singleton):
         self.vide_capture = cv.VideoCapture()
 
     def save(self):
-        pass
+        print('save!')
 
     def load(self):
         pass
