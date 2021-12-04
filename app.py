@@ -90,7 +90,23 @@ class App(QObject, metaclass=Singleton):
             f.close()
             self.open_file(self.file_path)
             self.set_frame_position(self.frame_position)
-            self.request_update()
+
+        # load current frame
+        base_name = QFileInfo(self.file_path).baseName()
+        if self.is_sequential():
+            base_name += '_%s' % self.frame_position
+        f2 = QFile(os.path.join(self.output_dir, base_name + '.json'))
+        if f2.open(QFile.ReadOnly):
+            try:
+                json = QJsonDocument.fromJson(f2.readAll()).object()
+                self.label_areas = [LabelArea.deserialized(
+                    obj) for obj in json['labelAreas']]
+                print(self.label_areas)
+            except:
+                pass
+            f2.close()
+
+        self.request_update()
 
     def is_sequential(self):
         ext = QFileInfo(self.file_path).completeSuffix()
