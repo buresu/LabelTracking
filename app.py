@@ -59,6 +59,18 @@ class App(QObject, metaclass=Singleton):
             f.write(QJsonDocument.fromVariant(json).toJson())
             f.close()
 
+        # save current frame
+        base_name = QFileInfo(self.file_path).baseName()
+        if self.is_sequential():
+            base_name += '_%s' % self.frame_position
+        f2 = QFile(os.path.join(self.output_dir, base_name + '.json'))
+        if f2.open(QFile.WriteOnly):
+            json = dict()
+            json['labelAreas'] = [area.serialize()
+                                  for area in self.label_areas]
+            f2.write(QJsonDocument.fromVariant(json).toJson())
+            f2.close()
+
     def load(self):
 
         # load config
@@ -146,6 +158,7 @@ class App(QObject, metaclass=Singleton):
         self.set_frame_position(pos)
 
     def next_frame_position(self):
+        self.frame_position += 1
         self.read_video_frame()
 
     def set_frame_position(self, pos):
