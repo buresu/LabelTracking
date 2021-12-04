@@ -1,6 +1,6 @@
 import os
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox
 from PySide6.QtGui import QAction, QIcon
 from app import *
 from label_editor import *
@@ -47,6 +47,11 @@ class MainWindow(QMainWindow):
         quit_action.triggered.connect(self.close)
 
         file_menu.addAction(quit_action)
+
+        about_qt_action = QAction('About Qt', self)
+        about_qt_action.triggered.connect(self.show_about_qt)
+
+        help_menu.addAction(about_qt_action)
 
         tool_bar = QToolBar()
         tool_bar.setOrientation(Qt.Vertical)
@@ -171,3 +176,6 @@ class MainWindow(QMainWindow):
             self.next_button.setEnabled(False)
             self.slider.setEnabled(False)
             self.slider.setValue(0)
+
+    def show_about_qt(self):
+        QMessageBox.aboutQt(self, "About PySide")
