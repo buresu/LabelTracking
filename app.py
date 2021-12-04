@@ -1,5 +1,5 @@
 import os
-from PySide6.QtCore import Qt, Signal, QObject, QJsonDocument, QFile
+from PySide6.QtCore import Qt, Signal, QObject, QJsonDocument, QFile, QFileInfo
 import cv2 as cv
 from label import *
 
@@ -34,6 +34,9 @@ class App(QObject, metaclass=Singleton):
         self.trackers = []
 
         self.file_path = ''
+        self.image_formats = ['jpg', 'png']
+        self.video_formats = ['m4v', 'mp4', 'mov']
+        self.frame_position = 0
         self.frame = None
         self.vide_capture = cv.VideoCapture()
 
@@ -51,6 +54,7 @@ class App(QObject, metaclass=Singleton):
             json = dict()
             json['version'] = self.version
             json['filePath'] = self.file_path
+            json['framePosition'] = self.frame_position
             json['labels'] = [label.serialize() for label in self.labels]
             f.write(QJsonDocument.fromVariant(json).toJson())
             f.close()
@@ -64,13 +68,28 @@ class App(QObject, metaclass=Singleton):
                 json = QJsonDocument.fromJson(f.readAll()).object()
                 self.version = json['version']
                 self.file_path = json['filePath']
+                self.frame_position = json['framePosition']
                 self.labels = [Label.deserialized(
                     obj) for obj in json['labels']]
-                print(self.labels)
             except:
                 print('Can not load config')
             f.close()
+            self.open_file(self.file_path)
+            self.set_frame_position(self.frame_position)
             self.request_update()
+
+    def is_sequential(self):
+        ext = QFileInfo(self.file_path).completeSuffix()
+        if ext in self.video_formats:
+            return True
+        return False
+
+    def open_file(self, filename):
+        ext = QFileInfo(filename).completeSuffix()
+        if ext in self.image_formats:
+            self.open_image(filename)
+        elif ext in self.video_formats:
+            self.open_video(filename)
 
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
@@ -105,12 +124,14 @@ class App(QObject, metaclass=Singleton):
                 a.select = True
 
     def open_image(self, filename):
+        self.file_path = filename
+        self.frame_position = 0
         self.frame = cv.imread(filename, cv.IMREAD_COLOR)
         self.request_update()
 
     def open_video(self, filename):
+        self.file_path = filename
         self.vide_capture.open(filename)
-        self.set_frame_position(0)
         self.request_update()
 
     def get_frame_count(self):
@@ -128,6 +149,7 @@ class App(QObject, metaclass=Singleton):
         self.read_video_frame()
 
     def set_frame_position(self, pos):
+        self.frame_position = pos
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
         self.read_video_frame()
 

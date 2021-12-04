@@ -1,5 +1,5 @@
 import os
-from PySide6.QtCore import Qt, QFileInfo, QSize
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox
 from PySide6.QtGui import QAction, QIcon
 from app import *
@@ -25,14 +25,16 @@ class MainWindow(QMainWindow):
         open_action = QAction('&Open', self)
         open_action.setShortcut('Ctrl+O')
         open_action.setStatusTip('Open file')
-        open_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/file_open_black_24dp.svg')))
+        open_action.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/file_open_black_24dp.svg')))
         open_action.triggered.connect(self.open_file)
 
         file_menu.addAction(open_action)
 
         quit_action = QAction('&Quit', self)
         quit_action.setShortcut('Ctrl+Q')
-        quit_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/exit_to_app_black_24dp.svg')))
+        quit_action.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/exit_to_app_black_24dp.svg')))
         quit_action.setStatusTip('Quit application')
         quit_action.triggered.connect(self.close)
 
@@ -44,18 +46,21 @@ class MainWindow(QMainWindow):
 
         save_action = QAction('Save', self)
         save_action.setShortcut('Ctrl+S')
-        save_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
+        save_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
         save_action.triggered.connect(self.app.save)
 
         self.draw_mode_action = QAction('Draw', self)
         self.draw_mode_action.setShortcut('D')
-        self.draw_mode_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/mode_edit_black_24dp.svg')))
+        self.draw_mode_action.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__), 'icons/mode_edit_black_24dp.svg')))
         self.draw_mode_action.setCheckable(True)
         self.draw_mode_action.triggered.connect(self.change_draw_mode)
 
         self.edit_mode_action = QAction('Edit', self)
         self.edit_mode_action.setShortcut('E')
-        self.edit_mode_action.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/format_shapes_black_24dp.svg')))
+        self.edit_mode_action.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__), 'icons/format_shapes_black_24dp.svg')))
         self.edit_mode_action.setCheckable(True)
         self.edit_mode_action.triggered.connect(self.change_edit_mode)
 
@@ -79,12 +84,14 @@ class MainWindow(QMainWindow):
 
         self.back_button = QPushButton()
         self.back_button.setEnabled(False)
-        self.back_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/arrow_back_ios_new_black_24dp.svg')))
+        self.back_button.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/arrow_back_ios_new_black_24dp.svg')))
         self.back_button.pressed.connect(self.back_button_pressed)
 
         self.next_button = QPushButton()
         self.next_button.setEnabled(False)
-        self.next_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/arrow_forward_ios_black_24dp.svg')))
+        self.next_button.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/arrow_forward_ios_black_24dp.svg')))
         self.next_button.pressed.connect(self.next_button_pressed)
 
         self.auto_tracking = QCheckBox('Auto Tracking')
@@ -114,29 +121,14 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.label_area_view_dock)
 
         self.change_draw_mode()
+        self.update_video_ui()
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file')
         if len(filename) > 0:
-            ext = QFileInfo(filename[0]).completeSuffix()
-
-            image_exts = ['jpg', 'png']
-            video_exts = ['mp4', 'm4v']
-
-            if ext in image_exts:
-                self.app.open_image(filename[0])
-                self.back_button.setEnabled(False)
-                self.next_button.setEnabled(False)
-                self.slider.setEnabled(False)
-                self.slider.setValue(0)
-
-            elif ext in video_exts:
-                self.app.open_video(filename[0])
-                self.back_button.setEnabled(True)
-                self.next_button.setEnabled(True)
-                self.slider.setEnabled(True)
-                self.slider.setValue(0)
-                self.slider.setMaximum(self.app.get_frame_count() - 1)
+            self.app.open_file(filename[0])
+            self.app.set_frame_position(0)
+            self.update_video_ui()
 
     def slider_changed(self):
         self.app.set_frame_position(self.slider.value())
@@ -164,3 +156,16 @@ class MainWindow(QMainWindow):
             self.app.start_tracking()
         else:
             self.app.stop_tracking()
+
+    def update_video_ui(self):
+        if self.app.is_sequential():
+            self.back_button.setEnabled(True)
+            self.next_button.setEnabled(True)
+            self.slider.setEnabled(True)
+            self.slider.setMaximum(self.app.get_frame_count() - 1)
+            self.slider.setValue(self.app.frame_position)
+        else:
+            self.back_button.setEnabled(False)
+            self.next_button.setEnabled(False)
+            self.slider.setEnabled(False)
+            self.slider.setValue(0)
