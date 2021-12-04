@@ -70,6 +70,8 @@ class App(QObject, metaclass=Singleton):
                                   for area in self.label_areas]
             f2.write(QJsonDocument.fromVariant(json).toJson())
             f2.close()
+            cv.imwrite(os.path.join(self.output_dir,
+                       base_name + '.jpg'), self.frame)
 
     def load(self):
 
