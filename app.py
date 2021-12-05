@@ -70,10 +70,11 @@ class App(QObject, metaclass=Singleton):
             json = dict()
             json['labelAreas'] = [area.serialize()
                                   for area in self.label_areas]
+            filename = os.path.join(self.output_dir, base_name + '.jpg')
+            json['fileName'] = filename
             f.write(QJsonDocument.fromVariant(json).toJson())
             f.close()
-            cv.imwrite(os.path.join(self.output_dir,
-                       base_name + '.jpg'), self.frame)
+            cv.imwrite(filename, self.frame)
 
     def load(self):
         self.load_config()
