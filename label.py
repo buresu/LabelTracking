@@ -3,7 +3,7 @@ from PySide6.QtGui import QColor
 
 
 class Label(object):
-    def __init__(self, id='label1', color=Qt.red, parent=None):
+    def __init__(self, id='label1', color=Qt.red):
         self.id = id
         self.color = QColor(color)
 
@@ -27,7 +27,7 @@ class Label(object):
 
 
 class LabelArea(object):
-    def __init__(self, parent=None):
+    def __init__(self):
         self.id = ""
         self.enabled = True
         self.select = False
