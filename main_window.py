@@ -1,5 +1,5 @@
 import os
-from PySide6.QtCore import Qt, QSize, QDir
+from PySide6.QtCore import Qt, QSize, QDir, QEvent
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox
 from PySide6.QtGui import QAction, QIcon
 from app import *
@@ -13,6 +13,8 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.app = App()
+        self.setMouseTracking(True)
+        self.installEventFilter(self)
         self.setup_ui()
 
     def setup_ui(self):
@@ -92,25 +94,30 @@ class MainWindow(QMainWindow):
         size_policy.setHorizontalPolicy(QSizePolicy.Expanding)
 
         self.editor = LabelEditor()
+        self.editor.setFocusPolicy(Qt.StrongFocus)
         self.editor.setSizePolicy(size_policy)
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setEnabled(False)
+        self.slider.setFocusPolicy(Qt.NoFocus)
         self.slider.sliderReleased.connect(self.slider_changed)
 
         self.back_button = QPushButton()
         self.back_button.setEnabled(False)
+        self.back_button.setFocusPolicy(Qt.NoFocus)
         self.back_button.setIcon(QIcon(os.path.join(os.path.dirname(
             __file__), 'icons/arrow_back_ios_new_black_24dp.svg')))
         self.back_button.pressed.connect(self.back_button_pressed)
 
         self.next_button = QPushButton()
         self.next_button.setEnabled(False)
+        self.next_button.setFocusPolicy(Qt.NoFocus)
         self.next_button.setIcon(QIcon(os.path.join(os.path.dirname(
             __file__), 'icons/arrow_forward_ios_black_24dp.svg')))
         self.next_button.pressed.connect(self.next_button_pressed)
 
         self.auto_tracking = QCheckBox('Auto Tracking')
+        self.auto_tracking.setFocusPolicy(Qt.NoFocus)
         self.auto_tracking.setCheckState(Qt.Unchecked)
         self.auto_tracking.stateChanged.connect(self.set_auto_tracking)
 
@@ -138,6 +145,17 @@ class MainWindow(QMainWindow):
 
         self.change_draw_mode()
         self.update_video_ui()
+
+    def eventFilter(self, obj, e):
+        if e.type() == QEvent.KeyPress:
+            if e.key() == Qt.Key_Right and not e.isAutoRepeat():
+                self.app.next_frame_position()
+                self.slider.setValue(self.app.get_frame_position())
+            elif e.key() == Qt.Key_Left and not e.isAutoRepeat():
+                self.app.back_frame_position()
+                self.slider.setValue(self.app.get_frame_position())
+            return True
+        return False
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file')
@@ -187,7 +205,8 @@ class MainWindow(QMainWindow):
             self.slider.setValue(0)
 
     def export(self):
-        dirname = QFileDialog.getExistingDirectory(self, 'Select Directory', QDir.homePath())
+        dirname = QFileDialog.getExistingDirectory(
+            self, 'Select Directory', QDir.homePath())
         if len(dirname) > 0:
             exporter = Exporter()
             exporter.export_to_labelme(dirname)
