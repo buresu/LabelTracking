@@ -1,11 +1,12 @@
 import os
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QDir
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox
 from PySide6.QtGui import QAction, QIcon
 from app import *
 from label_editor import *
 from label_view import *
 from label_area_view import *
+from export import *
 
 
 class MainWindow(QMainWindow):
@@ -186,7 +187,10 @@ class MainWindow(QMainWindow):
             self.slider.setValue(0)
 
     def export(self):
-        pass
+        dirname = QFileDialog.getExistingDirectory(self, 'Select Directory', QDir.homePath())
+        if len(dirname) > 0:
+            exporter = Exporter()
+            exporter.export_to_labelme(dirname)
 
     def show_about_qt(self):
         QMessageBox.aboutQt(self, "About PySide")
