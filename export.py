@@ -47,6 +47,8 @@ class Exporter(object):
                     image_data).decode('utf-8')
                 areas = []
                 for area in label_areas:
+                    if not area.enabled:
+                        continue
                     area_json = dict()
                     area_json['label'] = area.id
                     area_json['group_id'] = None
