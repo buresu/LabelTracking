@@ -1,5 +1,5 @@
 import os
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu, QColorDialog
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu, QColorDialog, QInputDialog
 from PySide6.QtGui import QAction
 from app import *
 from label_list_model import *
@@ -19,7 +19,8 @@ class LabelView(QFrame):
 
         self.label_add_button = QPushButton()
         self.label_add_button.setFocusPolicy(Qt.ClickFocus)
-        self.label_add_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), 'icons/bookmark_add_black_24dp.svg')))
+        self.label_add_button.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__), 'icons/bookmark_add_black_24dp.svg')))
         self.label_add_button.clicked.connect(self.add_label)
 
         hvox = QHBoxLayout()
@@ -55,6 +56,15 @@ class LabelView(QFrame):
         if index.isValid():
             self.app.remove_label(index.data(Qt.DisplayRole))
 
+    def change_label_id(self):
+        index = self.label_view.currentIndex()
+        if index.isValid():
+            id, ret = QInputDialog.getText(
+                self, 'Type New Label Name', self.app.labels[index.row()].id)
+            if ret and id != '':
+                self.app.labels[index.row()].id = id
+                self.app.request_update()
+
     def change_label_color(self):
         index = self.label_view.currentIndex()
         if index.isValid():
@@ -67,6 +77,10 @@ class LabelView(QFrame):
         index = self.label_view.indexAt(p)
         if index.isValid():
             menu = QMenu()
+
+            change_id_action = QAction('Change Label Name', self)
+            change_id_action.triggered.connect(self.change_label_id)
+            menu.addAction(change_id_action)
 
             change_color_action = QAction('Change Label Color', self)
             change_color_action.triggered.connect(self.change_label_color)
