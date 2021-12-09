@@ -1,6 +1,6 @@
 import os
 from PySide6.QtCore import QDir
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu, QColorDialog, QInputDialog, QFileSystemModel, QToolButton
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QMenu, QFileSystemModel, QToolButton, QFileDialog
 from PySide6.QtGui import QAction
 from app import *
 from label_list_model import *
@@ -17,18 +17,17 @@ class OutputView(QFrame):
         self.output_dir_input = QLineEdit(self.app.output_dir)
         self.output_dir_input.setFocusPolicy(Qt.ClickFocus)
         self.output_dir_input.setReadOnly(True)
-        #self.label_input.editingFinished.connect(self.add_label)
 
         self.select_folder_button = QToolButton()
         self.select_folder_button.setFocusPolicy(Qt.NoFocus)
         self.select_folder_button.setIcon(QIcon(os.path.join(
             os.path.dirname(__file__), 'icons/folder_black_24dp.svg')))
-        #self.label_add_button.clicked.connect(self.add_label)
+        self.select_folder_button.clicked.connect(self.select_folder)
 
         hvox = QHBoxLayout()
         hvox.addWidget(self.output_dir_input)
         hvox.addWidget(self.select_folder_button)
-        
+
         self.model = QFileSystemModel()
         self.model.setFilter(QDir.NoDotAndDotDot | QDir.Files)
         self.model.setRootPath(self.app.output_dir)
@@ -36,10 +35,10 @@ class OutputView(QFrame):
         self.label_view = QListView()
         self.label_view.setModel(self.model)
         # self.label_view.setContextMenuPolicy(Qt.CustomContextMenu)
-        #self.label_view.customContextMenuRequested.connect(
+        # self.label_view.customContextMenuRequested.connect(
         #    self.show_context_menu)
-        #self.label_view.selectionModel().selectionChanged.connect(self.label_changed)
-        #self.label_view.setCurrentIndex(self.model.index(0))
+        # self.label_view.selectionModel().selectionChanged.connect(self.label_changed)
+        # self.label_view.setCurrentIndex(self.model.index(0))
 
         vbox = QVBoxLayout()
         vbox.addLayout(hvox)
@@ -47,14 +46,18 @@ class OutputView(QFrame):
 
         self.setLayout(vbox)
 
+    def select_folder(self):
+        dir = QFileDialog.getExistingDirectory(
+            self, "Select Output Directory", self.app.output_dir)
+        if (dir != ''):
+            self.app.output_dir = dir
+            self.output_dir_input.setText(dir)
+
     '''
     def label_changed(self, select):
         id = select.indexes()[0].data(Qt.DisplayRole)
         self.label_input.setText(id)
         self.app.current_label = self.app.get_label(id)
-
-    def add_label(self):
-        self.app.add_label(self.label_input.text())
 
     def remove_label(self):
         index = self.label_view.currentIndex()
