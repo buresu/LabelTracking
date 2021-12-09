@@ -64,7 +64,8 @@ class App(QObject, metaclass=Singleton):
     def save_frame(self):
         base_name = QFileInfo(self.file_path).baseName()
         if self.is_sequential():
-            base_name += '_%s' % self.frame_position
+            base_name += '_%s' % str(self.frame_position).zfill(
+                len(str(self.get_frame_count())))
         f = QFile(os.path.join(self.output_dir, base_name + '.json'))
         if f.open(QFile.WriteOnly):
             json = dict()
@@ -100,7 +101,8 @@ class App(QObject, metaclass=Singleton):
     def load_frame(self):
         base_name = QFileInfo(self.file_path).baseName()
         if self.is_sequential():
-            base_name += '_%s' % self.frame_position
+            base_name += '_%s' % str(self.frame_position).zfill(
+                len(str(self.get_frame_count())))
         f = QFile(os.path.join(self.output_dir, base_name + '.json'))
         if f.open(QFile.ReadOnly):
             try:
