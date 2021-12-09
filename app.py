@@ -24,7 +24,7 @@ class App(QObject, metaclass=Singleton):
 
         self.version = '0.0.1'
 
-        self.output_dir = './output'
+        self.output_dir = os.path.abspath('./output')
 
         self.labels = []
         self.label_areas = []
