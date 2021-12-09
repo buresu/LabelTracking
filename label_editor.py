@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QRect, QUrl, QRectF, QPointF, QSizeF
 from PySide6.QtWidgets import QWidget, QMenu
-from PySide6.QtGui import QImage, QPainter, QAction, QCursor, QTransform
+from PySide6.QtGui import QImage, QPainter, QAction, QCursor, QTransform, QPen, QFont
 import cv2 as cv
 from app import *
 from label_select_dialog import *
@@ -63,9 +63,17 @@ class LabelEditor(QWidget):
             if not area.select and area.enabled:
                 p.save()
                 label = self.app.get_label(area.id)
+                pen = QPen(Qt.white)
+                pen.setWidthF(2 / self.view_zoom)
+                p.setPen(pen)
+                font = p.font()
+                font.setPointSizeF(10 / self.view_zoom)
+                p.setFont(font)
                 if label != None:
-                    p.setPen(label.color)
-                    p.drawText(area.rect.topLeft() + QPointF(1, -1), label.id)
+                    pen.setColor(label.color)
+                    p.setPen(pen)
+                    p.drawText(area.rect.topLeft() +
+                               QPointF(5, -5) / self.view_zoom, label.id)
                 p.drawRect(area.rect)
                 p.restore()
 
@@ -74,13 +82,19 @@ class LabelEditor(QWidget):
             area = self.app.label_areas[i]
             if area.select and area.enabled:
                 p.save()
-                p.setPen(Qt.yellow)
+                pen = QPen(Qt.yellow)
+                pen.setWidthF(2 / self.view_zoom)
+                p.setPen(pen)
+                font = p.font()
+                font.setPointSizeF(10 / self.view_zoom)
+                p.setFont(font)
                 label = self.app.get_label(area.id)
                 if label != None:
-                    p.drawText(area.rect.topLeft() + QPointF(1, -1), label.id)
+                    p.drawText(area.rect.topLeft() +
+                               QPointF(5, -5) / self.view_zoom, label.id)
                 p.drawRect(area.rect)
                 for key in area.key_points:
-                    key_rect = QRectF(0, 0, 3, 3)
+                    key_rect = QRectF(0, 0, 5 / self.view_zoom, 5 / self.view_zoom)
                     key_rect.moveCenter(key)
                     p.fillRect(key_rect, Qt.yellow)
                 p.restore()
