@@ -1,41 +1,45 @@
 import os
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu, QColorDialog, QInputDialog
+from PySide6.QtCore import QDir
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QLineEdit, QListView, QHBoxLayout, QPushButton, QMenu, QColorDialog, QInputDialog, QFileSystemModel, QToolButton
 from PySide6.QtGui import QAction
 from app import *
 from label_list_model import *
 
 
-class LabelView(QFrame):
+class OutputView(QFrame):
 
     def __init__(self, parent=None):
-        super(LabelView, self).__init__(parent)
+        super(OutputView, self).__init__(parent)
         self.app = App()
 
-        self.setWindowTitle('Select Label')
+        self.setWindowTitle('Outputs')
 
-        self.label_input = QLineEdit('Label1')
-        self.label_input.setFocusPolicy(Qt.ClickFocus)
-        self.label_input.editingFinished.connect(self.add_label)
+        self.output_dir_input = QLineEdit(self.app.output_dir)
+        self.output_dir_input.setFocusPolicy(Qt.ClickFocus)
+        self.output_dir_input.setReadOnly(True)
+        #self.label_input.editingFinished.connect(self.add_label)
 
-        self.label_add_button = QPushButton()
-        self.label_add_button.setFocusPolicy(Qt.NoFocus)
-        self.label_add_button.setIcon(QIcon(os.path.join(
-            os.path.dirname(__file__), 'icons/bookmark_add_black_24dp.svg')))
-        self.label_add_button.clicked.connect(self.add_label)
+        self.select_folder_button = QToolButton()
+        self.select_folder_button.setFocusPolicy(Qt.NoFocus)
+        self.select_folder_button.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__), 'icons/folder_black_24dp.svg')))
+        #self.label_add_button.clicked.connect(self.add_label)
 
         hvox = QHBoxLayout()
-        hvox.addWidget(self.label_input)
-        hvox.addWidget(self.label_add_button)
-
-        self.model = LabelListModel()
+        hvox.addWidget(self.output_dir_input)
+        hvox.addWidget(self.select_folder_button)
+        
+        self.model = QFileSystemModel()
+        self.model.setFilter(QDir.NoDotAndDotDot | QDir.Files)
+        self.model.setRootPath(self.app.output_dir)
 
         self.label_view = QListView()
         self.label_view.setModel(self.model)
-        self.label_view.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.label_view.customContextMenuRequested.connect(
-            self.show_context_menu)
-        self.label_view.selectionModel().selectionChanged.connect(self.label_changed)
-        self.label_view.setCurrentIndex(self.model.index(0))
+        # self.label_view.setContextMenuPolicy(Qt.CustomContextMenu)
+        #self.label_view.customContextMenuRequested.connect(
+        #    self.show_context_menu)
+        #self.label_view.selectionModel().selectionChanged.connect(self.label_changed)
+        #self.label_view.setCurrentIndex(self.model.index(0))
 
         vbox = QVBoxLayout()
         vbox.addLayout(hvox)
@@ -43,6 +47,7 @@ class LabelView(QFrame):
 
         self.setLayout(vbox)
 
+    '''
     def label_changed(self, select):
         id = select.indexes()[0].data(Qt.DisplayRole)
         self.label_input.setText(id)
@@ -91,3 +96,4 @@ class LabelView(QFrame):
             menu.addAction(remove_action)
 
             menu.exec(self.label_view.mapToGlobal(p))
+    '''

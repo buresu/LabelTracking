@@ -6,6 +6,7 @@ from app import *
 from label_editor import *
 from label_view import *
 from label_area_view import *
+from output_view import *
 from export import *
 
 
@@ -142,6 +143,10 @@ class MainWindow(QMainWindow):
         self.label_area_view_dock = QDockWidget('Label Areas', self)
         self.label_area_view_dock.setWidget(LabelAreaView())
         self.addDockWidget(Qt.RightDockWidgetArea, self.label_area_view_dock)
+
+        self.output_view_dock = QDockWidget('Output', self)
+        self.output_view_dock.setWidget(OutputView())
+        self.addDockWidget(Qt.RightDockWidgetArea, self.output_view_dock)
 
         self.change_draw_mode()
         self.update_video_ui()
