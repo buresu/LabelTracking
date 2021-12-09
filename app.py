@@ -64,6 +64,8 @@ class App(QObject, metaclass=Singleton):
             f.close()
 
     def save_frame(self):
+        if len(self.label_areas) == 0:
+            return
         base_name = QFileInfo(self.file_path).baseName()
         if self.is_sequential():
             base_name += '_%s' % str(self.frame_position).zfill(
