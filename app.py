@@ -30,6 +30,8 @@ class App(QObject, metaclass=Singleton):
         self.label_areas = []
         self.current_label = None
 
+        self.auto_save = False
+
         self.auto_tracking = False
         self.trackers = []
 
@@ -177,17 +179,26 @@ class App(QObject, metaclass=Singleton):
         return int(self.vide_capture.get(cv.CAP_PROP_POS_FRAMES))
 
     def back_frame_position(self):
-        pos = self.get_frame_position() - 2
-        pos = max(0, pos)
-        self.set_frame_position(pos)
+        if self.auto_save:
+            self.save()
+        pos = max(0, self.get_frame_position() - 2)
+        self.frame_position = pos
+        if not self.auto_tracking:
+            self.load_frame()
+        self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
+        self.read_video_frame()
 
     def next_frame_position(self):
+        if self.auto_save:
+            self.save()
         self.frame_position += 1
         if not self.auto_tracking:
             self.load_frame()
         self.read_video_frame()
 
     def set_frame_position(self, pos):
+        if self.auto_save:
+            self.save()
         self.frame_position = pos
         if not self.auto_tracking:
             self.load_frame()

@@ -122,11 +122,17 @@ class MainWindow(QMainWindow):
         self.auto_tracking.setCheckState(Qt.Unchecked)
         self.auto_tracking.stateChanged.connect(self.set_auto_tracking)
 
+        self.auto_save = QCheckBox('Auto Save')
+        self.auto_save.setFocusPolicy(Qt.NoFocus)
+        self.auto_save.setCheckState(Qt.Unchecked)
+        self.auto_save.stateChanged.connect(self.set_auto_save)
+
         hbox = QHBoxLayout()
         hbox.addWidget(self.slider)
         hbox.addWidget(self.back_button)
         hbox.addWidget(self.next_button)
         hbox.addWidget(self.auto_tracking)
+        hbox.addWidget(self.auto_save)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.editor)
@@ -195,6 +201,12 @@ class MainWindow(QMainWindow):
             self.app.start_tracking()
         else:
             self.app.stop_tracking()
+
+    def set_auto_save(self):
+        if self.auto_save.checkState() == Qt.Checked:
+            self.app.auto_save = True
+        else:
+            self.app.auto_save = False
 
     def update_video_ui(self):
         if self.app.is_sequential():
