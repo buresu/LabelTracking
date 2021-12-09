@@ -29,11 +29,15 @@ class OutputView(QFrame):
         hvox.addWidget(self.select_folder_button)
 
         self.model = QFileSystemModel()
+        self.model.setReadOnly(True)
         self.model.setFilter(QDir.NoDotAndDotDot | QDir.Files)
         self.model.setRootPath(self.app.output_dir)
+        self.model.setNameFilterDisables(False)
+        self.model.setNameFilters(['*.jpg'])
 
-        self.label_view = QListView()
-        self.label_view.setModel(self.model)
+        self.file_view = QListView()
+        self.file_view.setModel(self.model)
+        self.file_view.setRootIndex(self.model.index(self.app.output_dir))
         # self.label_view.setContextMenuPolicy(Qt.CustomContextMenu)
         # self.label_view.customContextMenuRequested.connect(
         #    self.show_context_menu)
@@ -42,7 +46,7 @@ class OutputView(QFrame):
 
         vbox = QVBoxLayout()
         vbox.addLayout(hvox)
-        vbox.addWidget(self.label_view)
+        vbox.addWidget(self.file_view)
 
         self.setLayout(vbox)
 
@@ -52,6 +56,8 @@ class OutputView(QFrame):
         if (dir != ''):
             self.app.output_dir = dir
             self.output_dir_input.setText(dir)
+            self.model.setRootPath(dir)
+            self.file_view.setRootIndex(self.model.index(dir))
 
     '''
     def label_changed(self, select):
