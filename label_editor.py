@@ -94,7 +94,8 @@ class LabelEditor(QWidget):
                                QPointF(5, -5) / self.view_zoom, label.id)
                 p.drawRect(area.rect)
                 for key in area.key_points:
-                    key_rect = QRectF(0, 0, 5 / self.view_zoom, 5 / self.view_zoom)
+                    key_rect = QRectF(
+                        0, 0, 7 / self.view_zoom, 7 / self.view_zoom)
                     key_rect.moveCenter(key)
                     p.fillRect(key_rect, Qt.yellow)
                 p.restore()
@@ -133,7 +134,8 @@ class LabelEditor(QWidget):
             for area in self.app.label_areas:
                 if area.enabled:
                     for key in area.key_points:
-                        key_rect = QRectF(0, 0, 6, 6)
+                        key_rect = QRectF(
+                            0, 0,  10 / self.view_zoom, 10 / self.view_zoom)
                         key_rect.moveCenter(key)
                         if key_rect.contains(local_pos):
                             area.key_points_selection[area.key_points.index(
