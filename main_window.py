@@ -20,6 +20,8 @@ class MainWindow(QMainWindow):
 
     def setup_ui(self):
 
+        self.app.update.connect(self.update_video_ui)
+
         self.setWindowTitle('LabelTrancking')
 
         menu_bar = self.menuBar()

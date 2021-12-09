@@ -55,6 +55,7 @@ class OutputView(QFrame):
             self, "Select Output Directory", self.app.output_dir)
         if (dir != ''):
             self.app.output_dir = dir
+            self.app.load()
             self.output_dir_input.setText(dir)
             self.model.setRootPath(dir)
             self.file_view.setRootIndex(self.model.index(dir))
