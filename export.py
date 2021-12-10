@@ -2,6 +2,7 @@ import os
 import glob
 import shutil
 import base64
+from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QImageReader
 from app import *
 
@@ -63,6 +64,9 @@ class Exporter(object):
                 shutil.copyfile(image_path, image_out_path)
             except:
                 print('Export error')
+
+            # process events
+            QApplication.processEvents()
 
     def read_data(self, filename):
         f = QFile(filename)
