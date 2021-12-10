@@ -22,6 +22,7 @@ class Exporter(object):
         filenames = [f for f in filenames if 'config.json' not in f]
 
         # save files
+        # FIXME: this process is leaking memory
         for filename in filenames:
             basename = os.path.basename(filename)
             print(basename)
