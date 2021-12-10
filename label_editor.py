@@ -247,6 +247,9 @@ class LabelEditor(QWidget):
         for area in self.app.label_areas:
             if area.select:
                 self.app.label_areas.remove(area)
+                if self.app.auto_tracking:
+                    self.app.stop_tracking()
+                    self.app.start_tracking()
                 self.app.request_update()
 
     def select_label(self):
