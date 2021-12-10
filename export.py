@@ -62,7 +62,7 @@ class Exporter(object):
                                 QJsonDocument.fromVariant(json).toJson())
                 shutil.copyfile(image_path, image_out_path)
             except:
-                print('Export eccor')
+                print('Export error')
 
     def read_data(self, filename):
         f = QFile(filename)
