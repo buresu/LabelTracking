@@ -36,6 +36,7 @@ class OutputView(QFrame):
         self.model.setNameFilters(['*.jpg'])
 
         self.file_view = QListView()
+        self.file_view.setLayoutMode(QListView.Batched)
         self.file_view.setModel(self.model)
         self.file_view.setRootIndex(self.model.index(self.app.output_dir))
         # self.label_view.setContextMenuPolicy(Qt.CustomContextMenu)
