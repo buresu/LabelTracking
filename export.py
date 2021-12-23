@@ -74,7 +74,7 @@ class Exporter(object):
         if f.open(QFile.ReadOnly):
             data = f.readAll()
             f.close()
-            return data
+            return data.data()
         return b''
 
     def write_data(self, filename, data):
