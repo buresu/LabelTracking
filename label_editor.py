@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QRect, QUrl, QRectF, QPointF, QSizeF
+from PySide6.QtCore import Qt, QRect, QUrl, QRectF, QPointF, QSizeF, QEvent
 from PySide6.QtWidgets import QWidget, QMenu
 from PySide6.QtGui import QImage, QPainter, QAction, QCursor, QTransform, QPen, QFont
 import cv2 as cv
@@ -15,6 +15,7 @@ class LabelEditor(QWidget):
         super(LabelEditor, self).__init__(parent)
         self.app = App()
         self.app.update.connect(self.update)
+        self.installEventFilter(self)
 
         self.setAutoFillBackground(True)
         self.setPalette(Qt.darkGray)
@@ -242,6 +243,18 @@ class LabelEditor(QWidget):
             self.view_zoom = min(max(self.view_zoom, 0.1), 10)
 
         self.update()
+
+    def eventFilter(self, obj, e):
+        if e.type() == QEvent.KeyPress:
+            if e.key() >= Qt.Key_0 and e.key() <= Qt.Key_9:
+                index = e.key() - Qt.Key_0
+                if index < len(self.app.labels):
+                    for area in self.app.label_areas:
+                        if area.select:
+                            area.id = self.app.labels[index].id
+                            self.app.request_update()
+            return True
+        return False
 
     def remove_area(self):
         for area in self.app.label_areas:
