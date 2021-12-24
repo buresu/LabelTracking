@@ -58,6 +58,15 @@ class LabelArea(object):
         area.deserialize(obj)
         return area
 
+    def get_iou(self, other):
+        intersected = self.rect.intersected(other.rect)
+        r1 = self.rect.width() * self.rect.height()
+        r2 = other.rect.width() * other.rect.height()
+        r3 = intersected.width() * intersected.height()
+        if intersected.isEmpty():
+            return 0
+        return r3 / (r1 + r2 - r3)
+
     def update(self):
         self.rect.setTopLeft(self.key_points[0])
         self.rect.setBottomRight(self.key_points[1])
