@@ -30,6 +30,7 @@ class App(QObject, metaclass=Singleton):
         self.label_areas = []
         self.current_label = None
 
+        self.auto_id = False
         self.auto_save = False
 
         self.auto_tracking = False
@@ -103,8 +104,11 @@ class App(QObject, metaclass=Singleton):
         self.request_update()
 
     def load_frame(self):
+        # store previous label areas
+        previous_label_areas = self.label_areas.copy()
         # clear previous label areas
         self.label_areas.clear()
+        # load file
         base_name = QFileInfo(self.file_path).baseName()
         if self.is_sequential():
             base_name += '_%s' % str(self.frame_position).zfill(
@@ -118,6 +122,15 @@ class App(QObject, metaclass=Singleton):
             except:
                 pass
             f.close()
+        # set new label id if auto id is enabled
+        if self.auto_id:
+            label_ids = [label.id for label in self.labels]
+            for area in self.label_areas:
+                if not area.id in label_ids and area.enabled:
+                    for pre_area in previous_label_areas:
+                        if area.get_iou(pre_area) > 0.5:
+                            area.id = pre_area.id
+                            break
         self.request_update()
 
     def is_sequential(self):

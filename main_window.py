@@ -124,6 +124,11 @@ class MainWindow(QMainWindow):
         self.auto_tracking.setCheckState(Qt.Unchecked)
         self.auto_tracking.stateChanged.connect(self.set_auto_tracking)
 
+        self.auto_id = QCheckBox('Auto ID')
+        self.auto_id.setFocusPolicy(Qt.NoFocus)
+        self.auto_id.setCheckState(Qt.Unchecked)
+        self.auto_id.stateChanged.connect(self.set_auto_id)
+
         self.auto_save = QCheckBox('Auto Save')
         self.auto_save.setFocusPolicy(Qt.NoFocus)
         self.auto_save.setCheckState(Qt.Unchecked)
@@ -134,6 +139,7 @@ class MainWindow(QMainWindow):
         hbox.addWidget(self.back_button)
         hbox.addWidget(self.next_button)
         hbox.addWidget(self.auto_tracking)
+        hbox.addWidget(self.auto_id)
         hbox.addWidget(self.auto_save)
 
         vbox = QVBoxLayout()
@@ -203,6 +209,12 @@ class MainWindow(QMainWindow):
             self.app.start_tracking()
         else:
             self.app.stop_tracking()
+
+    def set_auto_id(self):
+        if self.auto_id.checkState() == Qt.Checked:
+            self.app.auto_id = True
+        else:
+            self.app.auto_id = False
 
     def set_auto_save(self):
         if self.auto_save.checkState() == Qt.Checked:
