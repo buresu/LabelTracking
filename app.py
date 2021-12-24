@@ -103,6 +103,8 @@ class App(QObject, metaclass=Singleton):
         self.request_update()
 
     def load_frame(self):
+        # clear previous label areas
+        self.label_areas.clear()
         base_name = QFileInfo(self.file_path).baseName()
         if self.is_sequential():
             base_name += '_%s' % str(self.frame_position).zfill(
@@ -186,7 +188,6 @@ class App(QObject, metaclass=Singleton):
         pos = max(0, self.get_frame_position() - 2)
         self.frame_position = pos
         if not self.auto_tracking:
-            self.label_areas.clear()
             self.load_frame()
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
         self.read_video_frame()
@@ -196,7 +197,6 @@ class App(QObject, metaclass=Singleton):
             self.save()
         self.frame_position += 1
         if not self.auto_tracking:
-            self.label_areas.clear()
             self.load_frame()
         self.read_video_frame()
 
@@ -205,7 +205,6 @@ class App(QObject, metaclass=Singleton):
             self.save()
         self.frame_position = pos
         if not self.auto_tracking:
-            self.label_areas.clear()
             self.load_frame()
         self.vide_capture.set(cv.CAP_PROP_POS_FRAMES, pos)
         self.read_video_frame()
