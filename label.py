@@ -60,11 +60,11 @@ class LabelArea(object):
 
     def get_iou(self, other):
         intersected = self.rect.intersected(other.rect)
+        if intersected.isEmpty():
+            return 0
         r1 = self.rect.width() * self.rect.height()
         r2 = other.rect.width() * other.rect.height()
         r3 = intersected.width() * intersected.height()
-        if intersected.isEmpty():
-            return 0
         return r3 / (r1 + r2 - r3)
 
     def update(self):
