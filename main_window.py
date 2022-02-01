@@ -45,14 +45,14 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(save_action)
 
-        import_label_action = QAction('Import Label', self)
+        import_label_action = QAction('Import Labels', self)
         import_label_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_black_24dp.svg')))
         import_label_action.triggered.connect(self.import_label)
 
         file_menu.addAction(import_label_action)
 
-        export_label_action = QAction('Export Label', self)
+        export_label_action = QAction('Export Labels', self)
         export_label_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_not_black_24dp.svg')))
         export_label_action.triggered.connect(self.export_label)
