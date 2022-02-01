@@ -60,7 +60,6 @@ class App(QObject, metaclass=Singleton):
             json = dict()
             json['lastOutputDir'] = self.output_dir
             f.write(QJsonDocument.fromVariant(json).toJson())
-            print("write!")
             f.close()
 
     def save_config(self):
