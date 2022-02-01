@@ -1,5 +1,5 @@
 import os
-from PySide6.QtCore import Qt, Signal, QObject, QJsonDocument, QFile, QFileInfo
+from PySide6.QtCore import Qt, Signal, QObject, QJsonDocument, QFile, QFileInfo, QStandardPaths
 import cv2 as cv
 from label import *
 
@@ -43,11 +43,25 @@ class App(QObject, metaclass=Singleton):
         self.vide_capture = cv.VideoCapture()
 
         # load config
+        self.load_app_config()
         self.load()
 
     def save(self):
+        self.save_app_config()
         self.save_config()
         self.save_frame()
+
+    def save_app_config(self):
+        config_dir = QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)[0]
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+        f = QFile(os.path.join(config_dir, 'config.json'))
+        if f.open(QFile.WriteOnly):
+            json = dict()
+            json['lastOutputDir'] = self.output_dir
+            f.write(QJsonDocument.fromVariant(json).toJson())
+            print("write!")
+            f.close()
 
     def save_config(self):
         if not os.path.exists(self.output_dir):
@@ -84,6 +98,17 @@ class App(QObject, metaclass=Singleton):
     def load(self):
         self.load_config()
         self.load_frame()
+
+    def load_app_config(self):
+        config_dir = QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)[0]
+        f = QFile(os.path.join(config_dir, 'config.json'))
+        if f.open(QFile.ReadOnly):
+            try:
+                json = QJsonDocument.fromJson(f.readAll()).object()
+                self.output_dir = json['lastOutputDir']
+            except:
+                print('Can not load app config')
+            f.close()
 
     def load_config(self):
         f = QFile(os.path.join(self.output_dir, 'config.json'))
