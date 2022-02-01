@@ -5,6 +5,7 @@ from main_window import *
 
 def main():
     app = QApplication(sys.argv)
+    app.setApplicationName('LabelTracking')
     w = MainWindow()
     w.showMaximized()
     app.exec()
