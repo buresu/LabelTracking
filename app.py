@@ -34,7 +34,6 @@ class App(QObject, metaclass=Singleton):
         self.auto_save = False
 
         self.auto_tracking = False
-        self.trackers = []
 
         self.file_path = ''
         self.image_formats = ['jpg', 'png']
@@ -228,31 +227,19 @@ class App(QObject, metaclass=Singleton):
             self.frame = frame
             if self.auto_tracking:
                 for area in self.label_areas:
-                    if area.enabled:
-                        ret, box = self.trackers[self.label_areas.index(
-                            area)].update(self.frame)
-                        if ret:
-                            x, y, w, h = box[0:4]
-                            area.key_points[0] = QPointF(x, y)
-                            area.key_points[1] = QPointF(x + w, y + h)
-                            area.update()
+                    area.update_tracker(self.frame)
         self.request_update()
 
     def start_tracking(self):
         if self.frame is not None:
             self.auto_tracking = True
             for area in self.label_areas:
-                tracker = cv.TrackerCSRT_create()
-                x = int(area.rect.x())
-                y = int(area.rect.y())
-                w = int(area.rect.width())
-                h = int(area.rect.height())
-                tracker.init(self.frame, [x, y, w, h])
-                self.trackers.append(tracker)
+                area.start_tracking(self.frame)
 
     def stop_tracking(self):
         self.auto_tracking = False
-        self.trackers.clear()
+        for area in self.label_areas:
+            area.stop_tracking()
 
     def request_update(self):
         self.update.emit()

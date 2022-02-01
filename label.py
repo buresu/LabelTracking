@@ -1,5 +1,6 @@
 from PySide6.QtCore import Qt, QRectF, QPointF
 from PySide6.QtGui import QColor
+import cv2 as cv
 
 
 class Label(object):
@@ -34,6 +35,9 @@ class LabelArea(object):
         self.rect = QRectF()
         self.key_points = [QPointF(), QPointF()]
         self.key_points_selection = [False, False]
+        # Tracking
+        self.auto_tracking = False
+        self.tracker = cv.TrackerCSRT_create()
 
     def __repr__(self):
         return 'LabelArea(id=%s,keypoints=[[%s,%s],[%s,%s]])' % (self.id, self.key_points[0].x(), self.key_points[0].y(), self.key_points[1].x(), self.key_points[1].y())
@@ -70,3 +74,26 @@ class LabelArea(object):
     def update(self):
         self.rect.setTopLeft(self.key_points[0])
         self.rect.setBottomRight(self.key_points[1])
+
+    def start_tracking(self, frame):
+        self.auto_tracking = True
+        self.tracker = cv.TrackerCSRT_create()
+        self.update()
+        x = int(self.rect.x())
+        y = int(self.rect.y())
+        w = int(self.rect.width())
+        h = int(self.rect.height())
+        self.tracker.init(frame, [x, y, w, h])
+
+    def stop_tracking(self):
+        self.auto_tracking = False
+
+    def update_tracker(self, frame):
+        if self.auto_tracking and self.enabled:
+            self.update()
+            ret, box = self.tracker.update(frame)
+            if ret:
+                x, y, w, h = box[0:4]
+                self.key_points[0] = QPointF(x, y)
+                self.key_points[1] = QPointF(x + w, y + h)
+                self.update()
