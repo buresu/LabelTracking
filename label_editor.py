@@ -201,12 +201,11 @@ class LabelEditor(QWidget):
                         if b:
                             area.key_points[i] = local_pos
                             area.update()
+                            if self.app.auto_tracking and self.app.frame is not None:
+                                area.start_tracking(self.app.frame)
                             break
                     area.key_points_selection = [
                         False for i in area.key_points_selection]
-                    if self.app.auto_tracking:
-                        self.app.stop_tracking()
-                        self.app.start_tracking()
 
         # draw label
         if self.mode == LabelEditor.MODE_DRAW and self.draw_label_area != None:
