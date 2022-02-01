@@ -52,7 +52,8 @@ class App(QObject, metaclass=Singleton):
         self.save_frame()
 
     def save_app_config(self):
-        config_dir = QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)[0]
+        config_dir = QStandardPaths.standardLocations(
+            QStandardPaths.AppConfigLocation)[0]
         if not os.path.exists(config_dir):
             os.makedirs(config_dir)
         f = QFile(os.path.join(config_dir, 'config.json'))
@@ -99,7 +100,8 @@ class App(QObject, metaclass=Singleton):
         self.load_frame()
 
     def load_app_config(self):
-        config_dir = QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)[0]
+        config_dir = QStandardPaths.standardLocations(
+            QStandardPaths.AppConfigLocation)[0]
         f = QFile(os.path.join(config_dir, 'config.json'))
         if f.open(QFile.ReadOnly):
             try:
