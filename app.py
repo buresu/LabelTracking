@@ -171,6 +171,29 @@ class App(QObject, metaclass=Singleton):
         elif ext in self.video_formats:
             self.open_video(filename)
 
+    def import_label(self, filename):
+        self.labels.clear()
+        f = QFile(filename)
+        if f.open(QFile.ReadOnly):
+            try:
+                json = QJsonDocument.fromJson(f.readAll()).object()
+                self.labels = [Label.deserialized(
+                    obj) for obj in json['labels']]
+            except:
+                print('Can not load label file')
+            f.close()
+        self.request_update()
+
+    def export_label(self, filename):
+        if len(self.labels) == 0:
+            return
+        f = QFile(filename)
+        if f.open(QFile.WriteOnly):
+            json = dict()
+            json['labels'] = [label.serialize() for label in self.labels]
+            f.write(QJsonDocument.fromVariant(json).toJson())
+            f.close()
+
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) == 0 and id != '':

@@ -45,6 +45,20 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(save_action)
 
+        import_label_action = QAction('Import Label', self)
+        import_label_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_black_24dp.svg')))
+        import_label_action.triggered.connect(self.import_label)
+
+        file_menu.addAction(import_label_action)
+
+        export_label_action = QAction('Export Label', self)
+        export_label_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_not_black_24dp.svg')))
+        export_label_action.triggered.connect(self.export_label)
+
+        file_menu.addAction(export_label_action)
+
         export_action = QAction('Export', self)
         export_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp.svg')))
@@ -234,6 +248,18 @@ class MainWindow(QMainWindow):
             self.next_button.setEnabled(False)
             self.slider.setEnabled(False)
             self.slider.setValue(0)
+
+    def import_label(self):
+        filename = QFileDialog.getOpenFileName(
+            self, 'Select File', QDir.homePath())
+        if len(filename) > 0:
+            self.app.import_label(filename[0])
+
+    def export_label(self):
+        filename = QFileDialog.getSaveFileName(
+            self, 'Select File', QDir.homePath())
+        if len(filename) > 0:
+            self.app.export_label(filename[0])
 
     def export(self):
         dirname = QFileDialog.getExistingDirectory(
