@@ -115,7 +115,7 @@ class LabelEditor(QWidget):
         local_pos = t.map(e.position())
 
         # view transform
-        if e.button() == Qt.LeftButton and e.modifiers() & Qt.ShiftModifier:
+        if (e.button() == Qt.LeftButton and e.modifiers() & Qt.ShiftModifier) or e.button() == Qt.MiddleButton:
             self.view_press_start_pos = e.position() / self.view_zoom
             self.view_translate_start_pos = self.view_translate_pos
             self.update()
