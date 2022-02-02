@@ -1,6 +1,6 @@
 import os
 from PySide6.QtCore import Qt, QSize, QDir, QEvent
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox, QLabel
 from PySide6.QtGui import QAction, QIcon
 from app import *
 from label_editor import *
@@ -119,6 +119,11 @@ class MainWindow(QMainWindow):
         self.slider.setFocusPolicy(Qt.NoFocus)
         self.slider.sliderReleased.connect(self.slider_changed)
 
+        self.frameNumber = QLabel()
+        self.frameNumber.setEnabled(False)
+        self.frameNumber.setFocusPolicy(Qt.NoFocus)
+        self.frameNumber.setText("(0/0)")
+
         self.back_button = QPushButton()
         self.back_button.setEnabled(False)
         self.back_button.setFocusPolicy(Qt.NoFocus)
@@ -150,6 +155,7 @@ class MainWindow(QMainWindow):
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.slider)
+        hbox.addWidget(self.frameNumber)
         hbox.addWidget(self.back_button)
         hbox.addWidget(self.next_button)
         hbox.addWidget(self.auto_tracking)
@@ -243,11 +249,16 @@ class MainWindow(QMainWindow):
             self.slider.setEnabled(True)
             self.slider.setMaximum(self.app.get_frame_count() - 1)
             self.slider.setValue(self.app.frame_position)
+            self.frameNumber.setEnabled(True)
+            digits = len(str(self.app.get_frame_count()))
+            self.frameNumber.setText("(%s/%s)" % (str(self.app.get_frame_position()).zfill(digits), self.app.get_frame_count()))
         else:
             self.back_button.setEnabled(False)
             self.next_button.setEnabled(False)
             self.slider.setEnabled(False)
             self.slider.setValue(0)
+            self.frameNumber.setEnabled(False)
+            self.frameNumber.setText("(0/0)")
 
     def import_label(self):
         filename = QFileDialog.getOpenFileName(
