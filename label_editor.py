@@ -85,6 +85,7 @@ class LabelEditor(QWidget):
                 p.save()
                 pen = QPen(Qt.yellow)
                 pen.setWidthF(2 / self.view_zoom)
+                pen.setStyle(Qt.DotLine)
                 p.setPen(pen)
                 font = p.font()
                 font.setPointSizeF(10 / self.view_zoom)
