@@ -30,5 +30,5 @@ You can create binary package with pyinstaller
 ```
 pip3 install pyinstaller
 pyinstaller main.py
-cp -r ./icons dist/main/
+cp -r icons dist/main
 ```
