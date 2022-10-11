@@ -15,7 +15,6 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self, parent)
         self.app = App()
         self.setMouseTracking(True)
-        self.installEventFilter(self)
         self.setup_ui()
 
     def setup_ui(self):
@@ -24,6 +23,18 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('LabelTrancking')
 
+        # Shortshut
+        next_action = QAction(self)
+        next_action.setShortcut(Qt.Key_Right)
+        next_action.triggered.connect(self.next_button_pressed)
+        self.addAction(next_action)
+
+        back_action = QAction(self)
+        back_action.setShortcut(Qt.Key_Left)
+        back_action.triggered.connect(self.back_button_pressed)
+        self.addAction(back_action)
+
+        # Menu bar
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu('&File')
         help_menu = menu_bar.addMenu('&Help')
@@ -80,6 +91,7 @@ class MainWindow(QMainWindow):
 
         help_menu.addAction(about_qt_action)
 
+        # Tool bar
         tool_bar = QToolBar()
         tool_bar.setOrientation(Qt.Vertical)
         tool_bar.setIconSize(QSize(40, 40))
@@ -184,17 +196,6 @@ class MainWindow(QMainWindow):
 
         self.change_draw_mode()
         self.update_video_ui()
-
-    def eventFilter(self, obj, e):
-        if e.type() == QEvent.KeyPress:
-            if e.key() == Qt.Key_Right and not e.isAutoRepeat():
-                self.app.next_frame_position()
-                self.slider.setValue(self.app.get_frame_position())
-            elif e.key() == Qt.Key_Left and not e.isAutoRepeat():
-                self.app.back_frame_position()
-                self.slider.setValue(self.app.get_frame_position())
-            return True
-        return False
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file')
