@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         help_menu = menu_bar.addMenu('&Help')
 
         open_action = QAction('&Open', self)
-        open_action.setShortcut(Qt.CTRL + Qt.Key_O)
+        open_action.setShortcut(Qt.CTRL | Qt.Key_O)
         open_action.setStatusTip('Open file')
         open_action.setIcon(QIcon(os.path.join(os.path.dirname(
             __file__), 'icons/file_open_black_24dp.svg')))
@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         file_menu.addAction(open_action)
 
         save_action = QAction('Save', self)
-        save_action.setShortcut(Qt.CTRL + Qt.Key_S)
+        save_action.setShortcut(Qt.CTRL | Qt.Key_S)
         save_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
         save_action.triggered.connect(self.app.save)
@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
         file_menu.addAction(export_action)
 
         quit_action = QAction('&Quit', self)
-        quit_action.setShortcut(Qt.CTRL + Qt.Key_Q)
+        quit_action.setShortcut(Qt.CTRL | Qt.Key_Q)
         quit_action.setIcon(QIcon(os.path.join(os.path.dirname(
             __file__), 'icons/exit_to_app_black_24dp.svg')))
         quit_action.setStatusTip('Quit application')
