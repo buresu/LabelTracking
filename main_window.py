@@ -34,6 +34,11 @@ class MainWindow(QMainWindow):
         back_action.triggered.connect(self.back_button_pressed)
         self.addAction(back_action)
 
+        toggle_mode_action = QAction(self)
+        toggle_mode_action.setShortcut(Qt.Key_Tab)
+        toggle_mode_action.triggered.connect(self.toggle_editor_mode)
+        self.addAction(toggle_mode_action)
+
         # Menu bar
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu('&File')
@@ -97,14 +102,12 @@ class MainWindow(QMainWindow):
         tool_bar.setIconSize(QSize(40, 40))
 
         self.draw_mode_action = QAction('Draw', self)
-        self.draw_mode_action.setShortcut('D')
         self.draw_mode_action.setIcon(QIcon(os.path.join(
             os.path.dirname(__file__), 'icons/mode_edit_black_24dp.svg')))
         self.draw_mode_action.setCheckable(True)
         self.draw_mode_action.triggered.connect(self.change_draw_mode)
 
         self.edit_mode_action = QAction('Edit', self)
-        self.edit_mode_action.setShortcut('E')
         self.edit_mode_action.setIcon(QIcon(os.path.join(
             os.path.dirname(__file__), 'icons/format_shapes_black_24dp.svg')))
         self.edit_mode_action.setCheckable(True)
@@ -214,6 +217,12 @@ class MainWindow(QMainWindow):
     def next_button_pressed(self):
         self.app.next_frame_position()
         self.slider.setValue(self.app.get_frame_position())
+
+    def toggle_editor_mode(self):
+        if self.editor.mode == LabelEditor.MODE_EDIT:
+            self.change_draw_mode()
+        elif self.editor.mode == LabelEditor.MODE_DRAW:
+            self.change_edit_mode()
 
     def change_draw_mode(self):
         self.editor.set_mode(LabelEditor.MODE_DRAW)
