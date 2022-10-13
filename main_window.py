@@ -1,7 +1,7 @@
 import os
 from PySide6.QtCore import Qt, QSize, QDir, QEvent
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox, QLabel
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction, QIcon, QKeySequence
 from app import *
 from label_editor import *
 from label_view import *
@@ -41,9 +41,12 @@ class MainWindow(QMainWindow):
 
         # Menu bar
         menu_bar = self.menuBar()
+
         file_menu = menu_bar.addMenu('&File')
+        edit_menu = menu_bar.addMenu('&Edit')
         help_menu = menu_bar.addMenu('&Help')
 
+        # File menu
         open_action = QAction('&Open', self)
         open_action.setShortcut(Qt.CTRL | Qt.Key_O)
         open_action.setStatusTip('Open file')
@@ -53,7 +56,7 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(open_action)
 
-        save_action = QAction('Save', self)
+        save_action = QAction('&Save', self)
         save_action.setShortcut(Qt.CTRL | Qt.Key_S)
         save_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
@@ -97,6 +100,18 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(quit_action)
 
+        # Edit menu
+        undo_action = self.app.undo_stack.createUndoAction(self, 'Undo')
+        undo_action.setShortcuts(QKeySequence.Undo)
+
+        edit_menu.addAction(undo_action)
+ 
+        redo_action = self.app.undo_stack.createRedoAction(self, 'Redo')
+        redo_action.setShortcuts(QKeySequence.Redo)
+
+        edit_menu.addAction(redo_action)        
+
+        # Help menu
         about_qt_action = QAction('About Qt', self)
         about_qt_action.triggered.connect(self.show_about_qt)
 

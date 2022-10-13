@@ -1,5 +1,6 @@
 import os
 from PySide6.QtCore import Qt, Signal, QObject, QJsonDocument, QFile, QFileInfo, QStandardPaths
+from PySide6.QtGui import QUndoStack
 import cv2 as cv
 from label import *
 
@@ -41,6 +42,9 @@ class App(QObject, metaclass=Singleton):
         self.frame_position = 0
         self.frame = None
         self.vide_capture = cv.VideoCapture()
+
+        # undo stack
+        self.undo_stack = QUndoStack(self)
 
         # load config
         self.load_app_config()
