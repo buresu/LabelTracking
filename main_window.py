@@ -21,127 +21,10 @@ class MainWindow(QMainWindow):
 
         self.app.update.connect(self.update_video_ui)
 
+        # Title
         self.setWindowTitle('LabelTrancking')
 
-        # Shortshut
-        next_action = QAction(self)
-        next_action.setShortcut(QKeySequence.MoveToNextChar)
-        next_action.triggered.connect(self.next_button_pressed)
-        self.addAction(next_action)
-
-        back_action = QAction(self)
-        back_action.setShortcut(QKeySequence.MoveToPreviousChar)
-        back_action.triggered.connect(self.back_button_pressed)
-        self.addAction(back_action)
-
-        toggle_mode_action = QAction(self)
-        toggle_mode_action.setShortcut(Qt.Key_Tab)
-        toggle_mode_action.triggered.connect(self.toggle_editor_mode)
-        self.addAction(toggle_mode_action)
-
-        # Menu bar
-        menu_bar = self.menuBar()
-
-        file_menu = menu_bar.addMenu('&File')
-        edit_menu = menu_bar.addMenu('&Edit')
-        help_menu = menu_bar.addMenu('&Help')
-
-        # File menu
-        open_action = QAction('&Open', self)
-        open_action.setShortcut(QKeySequence.Open)
-        open_action.setStatusTip('Open file')
-        open_action.setIcon(QIcon(os.path.join(os.path.dirname(
-            __file__), 'icons/file_open_black_24dp.svg')))
-        open_action.triggered.connect(self.open_file)
-
-        file_menu.addAction(open_action)
-
-        save_action = QAction('&Save', self)
-        save_action.setShortcut(QKeySequence.Save)
-        save_action.setIcon(
-            QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
-        save_action.triggered.connect(self.app.save)
-
-        file_menu.addAction(save_action)
-
-        file_menu.addSeparator()
-
-        import_label_action = QAction('Import Labels', self)
-        import_label_action.setIcon(
-            QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_black_24dp.svg')))
-        import_label_action.triggered.connect(self.import_label)
-
-        file_menu.addAction(import_label_action)
-
-        export_label_action = QAction('Export Labels', self)
-        export_label_action.setIcon(
-            QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_not_black_24dp.svg')))
-        export_label_action.triggered.connect(self.export_label)
-
-        file_menu.addAction(export_label_action)
-
-        file_menu.addSeparator()
-
-        export_action = QAction('Export', self)
-        export_action.setIcon(
-            QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp.svg')))
-        export_action.triggered.connect(self.export)
-
-        file_menu.addAction(export_action)
-
-        file_menu.addSeparator()
-
-        quit_action = QAction('&Quit', self)
-        quit_action.setShortcut(QKeySequence.Quit)
-        quit_action.setIcon(QIcon(os.path.join(os.path.dirname(
-            __file__), 'icons/exit_to_app_black_24dp.svg')))
-        quit_action.setStatusTip('Quit application')
-        quit_action.triggered.connect(self.close)
-
-        file_menu.addAction(quit_action)
-
-        # Edit menu
-        undo_action = self.app.undo_stack.createUndoAction(self, 'Undo')
-        undo_action.setShortcuts(QKeySequence.Undo)
-
-        edit_menu.addAction(undo_action)
- 
-        redo_action = self.app.undo_stack.createRedoAction(self, 'Redo')
-        redo_action.setShortcuts(QKeySequence.Redo)
-
-        edit_menu.addAction(redo_action)        
-
-        # Help menu
-        about_qt_action = QAction('About Qt', self)
-        about_qt_action.triggered.connect(self.show_about_qt)
-
-        help_menu.addAction(about_qt_action)
-
-        # Tool bar
-        tool_bar = QToolBar()
-        tool_bar.setOrientation(Qt.Vertical)
-        tool_bar.setIconSize(QSize(40, 40))
-
-        self.draw_mode_action = QAction('Draw', self)
-        self.draw_mode_action.setIcon(QIcon(os.path.join(
-            os.path.dirname(__file__), 'icons/mode_edit_black_24dp.svg')))
-        self.draw_mode_action.setCheckable(True)
-        self.draw_mode_action.triggered.connect(self.change_draw_mode)
-
-        self.edit_mode_action = QAction('Edit', self)
-        self.edit_mode_action.setIcon(QIcon(os.path.join(
-            os.path.dirname(__file__), 'icons/format_shapes_black_24dp.svg')))
-        self.edit_mode_action.setCheckable(True)
-        self.edit_mode_action.triggered.connect(self.change_edit_mode)
-
-        tool_bar.addAction(open_action)
-        tool_bar.addAction(save_action)
-        tool_bar.addAction(export_action)
-        tool_bar.addAction(self.draw_mode_action)
-        tool_bar.addAction(self.edit_mode_action)
-
-        self.addToolBar(Qt.LeftToolBarArea, tool_bar)
-
+        # View
         size_policy = QSizePolicy()
         size_policy.setVerticalPolicy(QSizePolicy.Expanding)
         size_policy.setHorizontalPolicy(QSizePolicy.Expanding)
@@ -208,15 +91,160 @@ class MainWindow(QMainWindow):
 
         self.label_view_dock = QDockWidget('Select Label', self)
         self.label_view_dock.setWidget(LabelView())
+        self.label_view_dock.setFeatures(self.label_view_dock.features() ^ QDockWidget.DockWidgetClosable)
         self.addDockWidget(Qt.RightDockWidgetArea, self.label_view_dock)
 
         self.label_area_view_dock = QDockWidget('Label Areas', self)
         self.label_area_view_dock.setWidget(LabelAreaView())
+        self.label_area_view_dock.setFeatures(self.label_area_view_dock.features() ^ QDockWidget.DockWidgetClosable)
         self.addDockWidget(Qt.RightDockWidgetArea, self.label_area_view_dock)
 
         self.output_view_dock = QDockWidget('Output', self)
         self.output_view_dock.setWidget(OutputView())
+        self.output_view_dock.setFeatures(self.output_view_dock.features() ^ QDockWidget.DockWidgetClosable)
         self.addDockWidget(Qt.RightDockWidgetArea, self.output_view_dock)
+
+        # Shortshut
+        next_action = QAction(self)
+        next_action.setShortcut(QKeySequence.MoveToNextChar)
+        next_action.triggered.connect(self.next_button_pressed)
+        self.addAction(next_action)
+
+        back_action = QAction(self)
+        back_action.setShortcut(QKeySequence.MoveToPreviousChar)
+        back_action.triggered.connect(self.back_button_pressed)
+        self.addAction(back_action)
+
+        toggle_mode_action = QAction(self)
+        toggle_mode_action.setShortcut(Qt.Key_Tab)
+        toggle_mode_action.triggered.connect(self.toggle_editor_mode)
+        self.addAction(toggle_mode_action)
+
+        # Menu bar
+        menu_bar = self.menuBar()
+
+        file_menu = menu_bar.addMenu('&File')
+        edit_menu = menu_bar.addMenu('&Edit')
+        dock_menu = menu_bar.addMenu('&Dock')
+        help_menu = menu_bar.addMenu('&Help')
+
+        # File menu
+        open_action = QAction('&Open', self)
+        open_action.setShortcut(QKeySequence.Open)
+        open_action.setStatusTip('Open file')
+        open_action.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/file_open_black_24dp.svg')))
+        open_action.triggered.connect(self.open_file)
+
+        file_menu.addAction(open_action)
+
+        save_action = QAction('&Save', self)
+        save_action.setShortcut(QKeySequence.Save)
+        save_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
+        save_action.triggered.connect(self.app.save)
+
+        file_menu.addAction(save_action)
+
+        file_menu.addSeparator()
+
+        import_label_action = QAction('Import Labels', self)
+        import_label_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_black_24dp.svg')))
+        import_label_action.triggered.connect(self.import_label)
+
+        file_menu.addAction(import_label_action)
+
+        export_label_action = QAction('Export Labels', self)
+        export_label_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_not_black_24dp.svg')))
+        export_label_action.triggered.connect(self.export_label)
+
+        file_menu.addAction(export_label_action)
+
+        file_menu.addSeparator()
+
+        export_action = QAction('Export', self)
+        export_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp.svg')))
+        export_action.triggered.connect(self.export)
+
+        file_menu.addAction(export_action)
+
+        file_menu.addSeparator()
+
+        quit_action = QAction('&Quit', self)
+        quit_action.setShortcut(QKeySequence.Quit)
+        quit_action.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/exit_to_app_black_24dp.svg')))
+        quit_action.setStatusTip('Quit application')
+        quit_action.triggered.connect(self.close)
+
+        file_menu.addAction(quit_action)
+
+        # Edit menu
+        undo_action = self.app.undo_stack.createUndoAction(self, 'Undo')
+        undo_action.setShortcuts(QKeySequence.Undo)
+
+        edit_menu.addAction(undo_action)
+ 
+        redo_action = self.app.undo_stack.createRedoAction(self, 'Redo')
+        redo_action.setShortcuts(QKeySequence.Redo)
+
+        edit_menu.addAction(redo_action)
+
+        # Dock menu
+        show_select_label_action = QAction('Select Label', self)
+        show_select_label_action.setCheckable(True)
+        show_select_label_action.setChecked(True)
+        show_select_label_action.toggled.connect(self.label_view_dock.setVisible)
+
+        dock_menu.addAction(show_select_label_action)
+
+        show_label_areas_action = QAction('Label Areas', self)
+        show_label_areas_action.setCheckable(True)
+        show_label_areas_action.setChecked(True)
+        show_label_areas_action.toggled.connect(self.label_area_view_dock.setVisible)
+
+        dock_menu.addAction(show_label_areas_action)
+
+        show_output_action = QAction('Output', self)
+        show_output_action.setCheckable(True)
+        show_output_action.setChecked(True)
+        show_output_action.toggled.connect(self.output_view_dock.setVisible)
+
+        dock_menu.addAction(show_output_action)
+
+        # Help menu
+        about_qt_action = QAction('About Qt', self)
+        about_qt_action.triggered.connect(self.show_about_qt)
+
+        help_menu.addAction(about_qt_action)
+
+        # Tool bar
+        tool_bar = QToolBar()
+        tool_bar.setOrientation(Qt.Vertical)
+        tool_bar.setIconSize(QSize(40, 40))
+
+        self.draw_mode_action = QAction('Draw', self)
+        self.draw_mode_action.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__), 'icons/mode_edit_black_24dp.svg')))
+        self.draw_mode_action.setCheckable(True)
+        self.draw_mode_action.triggered.connect(self.change_draw_mode)
+
+        self.edit_mode_action = QAction('Edit', self)
+        self.edit_mode_action.setIcon(QIcon(os.path.join(
+            os.path.dirname(__file__), 'icons/format_shapes_black_24dp.svg')))
+        self.edit_mode_action.setCheckable(True)
+        self.edit_mode_action.triggered.connect(self.change_edit_mode)
+
+        tool_bar.addAction(open_action)
+        tool_bar.addAction(save_action)
+        tool_bar.addAction(export_action)
+        tool_bar.addAction(self.draw_mode_action)
+        tool_bar.addAction(self.edit_mode_action)
+
+        self.addToolBar(Qt.LeftToolBarArea, tool_bar)
 
         self.change_draw_mode()
         self.update_video_ui()
