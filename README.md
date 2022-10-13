@@ -31,3 +31,6 @@ You can create binary package with pyinstaller
 pip3 install pyinstaller
 pyinstaller main.py --windowed --onefile --add-data icons:icons
 ```
+
+## Icons
+Download from https://fonts.google.com/icons
