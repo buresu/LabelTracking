@@ -170,7 +170,7 @@ class MainWindow(QMainWindow):
 
         file_menu.addSeparator()
 
-        export_action = QAction('Export', self)
+        export_action = QAction('Export to labelme', self)
         export_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp.svg')))
         export_action.triggered.connect(self.export)
