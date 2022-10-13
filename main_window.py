@@ -61,6 +61,8 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(save_action)
 
+        file_menu.addSeparator()
+
         import_label_action = QAction('Import Labels', self)
         import_label_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/turned_in_black_24dp.svg')))
@@ -75,12 +77,16 @@ class MainWindow(QMainWindow):
 
         file_menu.addAction(export_label_action)
 
+        file_menu.addSeparator()
+
         export_action = QAction('Export', self)
         export_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp.svg')))
         export_action.triggered.connect(self.export)
 
         file_menu.addAction(export_action)
+
+        file_menu.addSeparator()
 
         quit_action = QAction('&Quit', self)
         quit_action.setShortcut(Qt.CTRL | Qt.Key_Q)
