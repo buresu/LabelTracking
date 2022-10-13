@@ -1,6 +1,6 @@
 import os
 from PySide6.QtCore import Qt, QSize, QDir, QEvent
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox, QLabel
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox, QLabel, QUndoView
 from PySide6.QtGui import QAction, QIcon, QKeySequence
 from app import *
 from label_editor import *
@@ -103,6 +103,12 @@ class MainWindow(QMainWindow):
         self.output_view_dock.setWidget(OutputView())
         self.output_view_dock.setFeatures(self.output_view_dock.features() ^ QDockWidget.DockWidgetClosable)
         self.addDockWidget(Qt.RightDockWidgetArea, self.output_view_dock)
+
+        self.history_view_dock = QDockWidget('History', self)
+        self.history_view_dock.setVisible(False)
+        self.history_view_dock.setWidget(QUndoView(self.app.undo_stack))
+        self.history_view_dock.setFeatures(self.history_view_dock.features() ^ QDockWidget.DockWidgetClosable)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.history_view_dock)
 
         # Shortshut
         next_action = QAction(self)
@@ -214,6 +220,13 @@ class MainWindow(QMainWindow):
         show_output_action.toggled.connect(self.output_view_dock.setVisible)
 
         dock_menu.addAction(show_output_action)
+
+        show_history_action = QAction('History', self)
+        show_history_action.setCheckable(True)
+        show_history_action.setChecked(False)
+        show_history_action.toggled.connect(self.history_view_dock.setVisible)
+
+        dock_menu.addAction(show_history_action)
 
         # Help menu
         about_qt_action = QAction('About Qt', self)
