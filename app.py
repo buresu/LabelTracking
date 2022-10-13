@@ -1,6 +1,7 @@
 import os
+import copy
 from PySide6.QtCore import Qt, Signal, QObject, QJsonDocument, QFile, QFileInfo, QStandardPaths
-from PySide6.QtGui import QUndoStack
+from PySide6.QtGui import QUndoStack, QUndoCommand
 import cv2 as cv
 from label import *
 
@@ -15,6 +16,28 @@ class Singleton(type(QObject), type):
             cls._instance = super().__call__(*args, **kwargs)
         return cls._instance
 
+class SaveAppStateCommand(QUndoCommand):
+    def __init__(self):
+        super(SaveAppStateCommand, self).__init__()
+        self.app = App()
+
+    def begin(self):
+        self.begin_labels = copy.deepcopy(self.app.labels)
+        self.begin_current_label = copy.deepcopy(self.app.current_label)
+
+    def end(self):
+        self.end_labels = copy.deepcopy(self.app.labels)
+        self.end_current_label = copy.deepcopy(self.app.current_label)
+
+    def undo(self):
+        self.app.labels = copy.deepcopy(self.begin_labels)
+        self.app.current_label = copy.deepcopy(self.begin_current_label)
+        self.app.request_update()
+
+    def redo(self):
+        self.app.labels = copy.deepcopy(self.end_labels)
+        self.app.current_label = copy.deepcopy(self.end_current_label)
+        self.app.request_update()
 
 class App(QObject, metaclass=Singleton):
 
@@ -201,18 +224,36 @@ class App(QObject, metaclass=Singleton):
     def add_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) == 0 and id != '':
+
+            cmd = SaveAppStateCommand()
+            cmd.setText('Edit Label')
+            cmd.begin()
+
             label = Label(id)
             self.labels.append(label)
             self.current_label = label
+
+            cmd.end()
+            self.undo_stack.push(cmd)
+
             self.request_update()
             return label
 
     def remove_label(self, id):
         idx = [i for i in range(len(self.labels)) if self.labels[i].id == id]
         if len(idx) > 0 and id != '':
+
+            cmd = SaveAppStateCommand()
+            cmd.setText('Edit Label')
+            cmd.begin()
+
             self.labels.remove(self.labels[idx[0]])
             if len(self.labels) == 0:
                 self.current_label = None
+
+            cmd.end()
+            self.undo_stack.push(cmd)
+
             self.request_update()
 
     def get_label(self, id):
