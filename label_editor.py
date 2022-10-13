@@ -1,7 +1,6 @@
 from PySide6.QtCore import Qt, QRect, QUrl, QRectF, QPointF, QSizeF, QEvent
 from PySide6.QtWidgets import QWidget, QMenu
 from PySide6.QtGui import QImage, QPainter, QAction, QCursor, QTransform, QPen, QFont
-import cv2 as cv
 from app import *
 from label_select_dialog import *
 
