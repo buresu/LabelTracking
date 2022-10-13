@@ -25,12 +25,12 @@ class MainWindow(QMainWindow):
 
         # Shortshut
         next_action = QAction(self)
-        next_action.setShortcut(Qt.Key_Right)
+        next_action.setShortcut(QKeySequence.MoveToNextChar)
         next_action.triggered.connect(self.next_button_pressed)
         self.addAction(next_action)
 
         back_action = QAction(self)
-        back_action.setShortcut(Qt.Key_Left)
+        back_action.setShortcut(QKeySequence.MoveToPreviousChar)
         back_action.triggered.connect(self.back_button_pressed)
         self.addAction(back_action)
 
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
 
         # File menu
         open_action = QAction('&Open', self)
-        open_action.setShortcut(Qt.CTRL | Qt.Key_O)
+        open_action.setShortcut(QKeySequence.Open)
         open_action.setStatusTip('Open file')
         open_action.setIcon(QIcon(os.path.join(os.path.dirname(
             __file__), 'icons/file_open_black_24dp.svg')))
@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
         file_menu.addAction(open_action)
 
         save_action = QAction('&Save', self)
-        save_action.setShortcut(Qt.CTRL | Qt.Key_S)
+        save_action.setShortcut(QKeySequence.Save)
         save_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/save_black_24dp.svg')))
         save_action.triggered.connect(self.app.save)
@@ -92,7 +92,7 @@ class MainWindow(QMainWindow):
         file_menu.addSeparator()
 
         quit_action = QAction('&Quit', self)
-        quit_action.setShortcut(Qt.CTRL | Qt.Key_Q)
+        quit_action.setShortcut(QKeySequence.Quit)
         quit_action.setIcon(QIcon(os.path.join(os.path.dirname(
             __file__), 'icons/exit_to_app_black_24dp.svg')))
         quit_action.setStatusTip('Quit application')
