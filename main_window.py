@@ -1,5 +1,5 @@
 import os
-from PySide6.QtCore import Qt, QSize, QDir, QEvent
+from PySide6.QtCore import Qt, QSize, QDir
 from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QFileDialog, QSlider, QPushButton, QToolBar, QDockWidget, QCheckBox, QMessageBox, QLabel, QUndoView
 from PySide6.QtGui import QAction, QIcon, QKeySequence
 from app import *
