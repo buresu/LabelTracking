@@ -190,11 +190,15 @@ class MainWindow(QMainWindow):
 
         # Edit menu
         undo_action = self.app.undo_stack.createUndoAction(self, 'Undo')
+        undo_action.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/undo_black_24dp.svg')))
         undo_action.setShortcuts(QKeySequence.Undo)
 
         edit_menu.addAction(undo_action)
  
         redo_action = self.app.undo_stack.createRedoAction(self, 'Redo')
+        redo_action.setIcon(QIcon(os.path.join(os.path.dirname(
+            __file__), 'icons/redo_black_24dp.svg')))
         redo_action.setShortcuts(QKeySequence.Redo)
 
         edit_menu.addAction(redo_action)
