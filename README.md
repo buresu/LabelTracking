@@ -29,6 +29,11 @@ python3 -m jurigged -v main.py
 You can create binary package with pyinstaller
 ```
 pip3 install pyinstaller
+
+[Windows]
+pyinstaller main.py --windowed --onefile --add-data 'icons;icons'
+
+[Mac]
 pyinstaller main.py --windowed --onefile --add-data icons:icons
 ```
 
