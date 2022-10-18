@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.app.update.connect(self.update_video_ui)
 
         # Title
-        self.setWindowTitle('LabelTrancking')
+        self.setWindowTitle('LabelTracking v' + self.app.version)
 
         # View
         size_policy = QSizePolicy()
