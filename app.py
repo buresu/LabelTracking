@@ -301,7 +301,7 @@ class App(QObject, metaclass=Singleton):
     def next_frame_position(self):
         if self.auto_save:
             self.save()
-        if self.frame_position >= self.get_frame_count():
+        if self.frame_position + 1 >= self.get_frame_count():
             return
         self.frame_position += 1
         if not self.auto_tracking:
