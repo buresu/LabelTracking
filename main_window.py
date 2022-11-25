@@ -352,8 +352,11 @@ class MainWindow(QMainWindow):
         dirname = QFileDialog.getExistingDirectory(
             self, 'Select Directory', QDir.homePath())
         if len(dirname) > 0:
-            exporter = Exporter()
-            exporter.export_to_labelme(dirname)
+            if dirname == self.app.output_dir:
+                QMessageBox.warning(self, 'Export error','Can not export to output directory. Please select another directory!')
+            else:
+                exporter = Exporter()
+                exporter.export_to_labelme(dirname)
 
     def show_about_qt(self):
         QMessageBox.aboutQt(self, "About PySide")
