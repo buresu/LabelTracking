@@ -257,7 +257,6 @@ class MainWindow(QMainWindow):
 
         tool_bar.addAction(open_action)
         tool_bar.addAction(save_action)
-        tool_bar.addAction(export_action)
         tool_bar.addAction(self.draw_mode_action)
         tool_bar.addAction(self.edit_mode_action)
 
