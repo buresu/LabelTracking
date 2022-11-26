@@ -7,7 +7,8 @@ from label_editor import *
 from label_view import *
 from label_area_view import *
 from output_view import *
-from export import *
+from importer import *
+from exporter import *
 
 
 class MainWindow(QMainWindow):
@@ -170,10 +171,17 @@ class MainWindow(QMainWindow):
 
         file_menu.addSeparator()
 
+        import_action = QAction('Import from labelme', self)
+        import_action.setIcon(
+            QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp_edit.svg')))
+        import_action.triggered.connect(self.import_from_labelme)
+
+        file_menu.addAction(import_action)
+
         export_action = QAction('Export to labelme', self)
         export_action.setIcon(
             QIcon(os.path.join(os.path.dirname(__file__), 'icons/ios_share_black_24dp.svg')))
-        export_action.triggered.connect(self.export)
+        export_action.triggered.connect(self.export_to_labelme)
 
         file_menu.addAction(export_action)
 
@@ -347,12 +355,23 @@ class MainWindow(QMainWindow):
         if len(filename) > 0:
             self.app.export_label(filename[0])
 
-    def export(self):
+    def import_from_labelme(self):
         dirname = QFileDialog.getExistingDirectory(
             self, 'Select Directory', QDir.homePath())
         if len(dirname) > 0:
             if dirname == self.app.output_dir:
-                QMessageBox.warning(self, 'Export error','Can not export to output directory. Please select another directory!')
+                QMessageBox.warning(self, 'Import error', 'Can not import from output directory. Please select another directory!')
+            else:
+                if QMessageBox.warning(self, 'Warning', 'All files in the output directory will be deleted!', QMessageBox.Yes | QMessageBox.Cancel) == QMessageBox.Yes:
+                    importer = Importer()
+                    importer.import_from_labelme(dirname)
+
+    def export_to_labelme(self):
+        dirname = QFileDialog.getExistingDirectory(
+            self, 'Select Directory', QDir.homePath())
+        if len(dirname) > 0:
+            if dirname == self.app.output_dir:
+                QMessageBox.warning(self, 'Export error', 'Can not export to output directory. Please select another directory!')
             else:
                 exporter = Exporter()
                 exporter.export_to_labelme(dirname)
