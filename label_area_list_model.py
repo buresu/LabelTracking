@@ -48,7 +48,7 @@ class LabelAreaListModel(QAbstractListModel):
             return None
 
         if role == Qt.CheckStateRole:
-            if value == Qt.Checked:
+            if value == Qt.Checked.value:
                 self.app.label_areas[index.row()].enabled = True
             else:
                 self.app.label_areas[index.row()].enabled = False
