@@ -143,7 +143,6 @@ class App(QObject, metaclass=Singleton):
         if f.open(QFile.ReadOnly):
             try:
                 json = QJsonDocument.fromJson(f.readAll()).object()
-                self.version = json['version']
                 self.file_path = json['filePath']
                 self.frame_position = json['framePosition']
                 self.labels = [Label.deserialized(
