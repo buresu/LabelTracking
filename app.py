@@ -120,7 +120,11 @@ class App(QObject, metaclass=Singleton):
             json['fileName'] = filename
             f.write(QJsonDocument.fromVariant(json).toJson())
             f.close()
-            cv.imwrite(filename, self.frame)
+            ret, array = cv.imencode('.jpg', self.frame, [cv.IMWRITE_JPEG_QUALITY, 100])
+            f = QFile(filename)
+            if ret and f.open(QFile.WriteOnly):
+                f.write(array.tobytes())
+                f.close()
 
     def load(self):
         self.load_config()
