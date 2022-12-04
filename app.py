@@ -46,7 +46,7 @@ class App(QObject, metaclass=Singleton):
     def __init__(self):
         super(App, self).__init__()
 
-        self.version = '0.2.2'
+        self.version = '0.2.3'
 
         self.output_dir = os.path.abspath('./output')
 
